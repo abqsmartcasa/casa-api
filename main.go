@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	userPassword := url.UserPassword(os.Getenv("PORT"), os.Getenv("PASSWORD"))
+	userPassword := url.UserPassword(os.Getenv("USER"), os.Getenv("PASSWORD"))
 	URI := new(url.URL)
 	URI.Scheme = "postgres"
 	URI.User = userPassword
@@ -26,7 +26,8 @@ func main() {
 	env := &Env{db: db}
 	r := mux.NewRouter()
 	paragraphs := r.PathPrefix("/paragraphs").Subrouter()
-	paragraphs.HandleFunc("", langCheck(env.paragraphs)).Methods("GET")
+	paragraphs.Use(langCheck)
+	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
 }

@@ -15,8 +15,8 @@ var matcher = language.NewMatcher([]language.Tag{
 	language.Spanish,
 })
 
-func langCheck(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func langCheck(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		lang, _ := r.Cookie("lang")
 		accept := r.Header.Get("Accept-Language")
 		tag, _ := language.MatchStrings(matcher, lang.String(), accept)
@@ -25,6 +25,6 @@ func langCheck(f http.HandlerFunc) http.HandlerFunc {
 		} else {
 			context.Set(r, "lang", tag.String())
 		}
-		f(w, r)
-	}
+		next.ServeHTTP(w, r)
+	})
 }
