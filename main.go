@@ -25,9 +25,13 @@ func main() {
 	}
 	env := &Env{db: db}
 	r := mux.NewRouter()
+	paragraphIncludes := includeCheck{validParams: []string{"compliances"}}
 	paragraphs := r.PathPrefix("/paragraphs").Subrouter()
 	paragraphs.Use(langCheck)
+	paragraphs.Use(paragraphIncludes.Middleware)
 	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
+	paragraphs.HandleFunc("/{key}", env.paragraph).Methods("GET")
+
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
 }
