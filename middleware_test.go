@@ -72,3 +72,24 @@ func TestIncludeCheck(t *testing.T) {
 		}
 	}
 }
+
+func TestIncludeCheckNoParams(t *testing.T) {
+	icm := includeCheck{validParams: []string{}}
+	rr := httptest.NewRecorder()
+	router := mux.NewRouter()
+	r := router.PathPrefix("/paragraphs").Subrouter()
+	r.Use(icm.Middleware)
+	r.HandleFunc("", handler)
+	r.HandleFunc("/{key}", handler)
+	req, err := http.NewRequest("GET", "/paragraphs/13?include=compliances", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r.ServeHTTP(rr, req)
+
+	if rr.Code != 400 {
+		t.Errorf(" got %v want %v",
+			rr.Code, 400)
+	}
+}

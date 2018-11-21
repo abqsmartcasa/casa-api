@@ -56,8 +56,12 @@ func (icw *includeCheck) Middleware(next http.Handler) http.Handler {
 		key := vars["key"]
 		v := r.URL.Query()
 		include := v.Get("include")
+		if len(icw.validParams) == 0 {
+			http.Error(w, "HTTP 400: include not supported on this resource", 400)
+			return
+		}
 		if key == "" && include != "" {
-			http.Error(w, "HTTP 400: include not supported on this endpoint", 400)
+			http.Error(w, "HTTP 400: include not supported on this resource", 400)
 			return
 		}
 		if include != "" {
