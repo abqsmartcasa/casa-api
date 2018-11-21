@@ -58,35 +58,10 @@ func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph, include string
 	p := new(Paragraph)
 	includeParams := strings.Split(include, ",")
 	if contains(includeParams, "compliances") {
-		query := `SELECT
-			paragraph_compliance.id,
-			report.report_number AS report_id,
-			paragraph.paragraph_number AS paragraph_id,
-			p_trans.text AS primary_compliance,
-			s_trans.text AS secondary_compliance,
-			o_trans.text AS operational_compliance
-		FROM
-			paragraph_compliance
-			JOIN report ON report.uuid = paragraph_compliance.report_uuid
-			JOIN lkp_compliance AS p_compliance
-			ON paragraph_compliance.primary_compliance = p_compliance.id
-			JOIN trans_compliance AS p_trans
-			ON p_trans.compliance_id = p_compliance.id
-			JOIN lkp_compliance AS s_compliance
-			ON paragraph_compliance.secondary_compliance = s_compliance.id
-			JOIN trans_compliance AS s_trans
-			ON s_trans.compliance_id = s_compliance.id
-			JOIN lkp_compliance AS o_compliance
-			ON paragraph_compliance.operation_compliance = o_compliance.id
-			JOIN trans_compliance AS o_trans
-			ON o_trans.compliance_id = o_compliance.id
-			JOIN paragraph ON paragraph.uuid = paragraph_compliance.paragraph_uuid
-		WHERE
-			p_trans.lang_code = $1
-			AND s_trans.lang_code = $1
-			AND o_trans.lang_code = $1
-			AND paragraph.paragraph_number = $2`
-		fmt.Println(paragraph.ID)
+		var cQueryBuilder strings.Builder
+		cQueryBuilder.WriteString(complianceQuery)
+		cQueryBuilder.WriteString(" AND paragraph.paragraph_number = $2")
+		query := cQueryBuilder.String()
 		rows, err := db.Query(query, lang, paragraph.ID)
 		cs := make([]*Compliance, 0)
 		if err != nil {
@@ -108,10 +83,10 @@ func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph, include string
 		}
 		p.Compliances = cs
 	}
-	var queryBuilder strings.Builder
-	queryBuilder.WriteString(paragraphQuery)
-	queryBuilder.WriteString(" AND paragraph.paragraph_number = $2")
-	query := queryBuilder.String()
+	var pQueryBuilder strings.Builder
+	pQueryBuilder.WriteString(paragraphQuery)
+	pQueryBuilder.WriteString(" AND paragraph.paragraph_number = $2")
+	query := pQueryBuilder.String()
 	row := db.QueryRow(query, lang, paragraph.ID)
 	err := row.Scan(&p.ID, &p.ParagraphNumber, &p.ParagraphTitle, &p.ParagraphText)
 	if err != nil {
