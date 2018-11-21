@@ -1,11 +1,13 @@
 package models
 
+import "strings"
+
 // Compliance model for compliances
 type Compliance struct {
 	UUID                string `json:"-"`
 	ID                  int    `json:"id"`
-	ReportID            string `json:"report_id"`
-	ParagraphID         string `json:"paragraph_id"`
+	ReportID            int    `json:"report_id"`
+	ParagraphID         int    `json:"paragraph_id"`
 	PrimaryCompliance   string `json:"primary_compliance"`
 	OperationCompliance string `json:"operational_compliance"`
 	SecondaryCompliance string `json:"secondary_compliance"`
@@ -38,3 +40,41 @@ var complianceQuery = `SELECT
 			p_trans.lang_code = $1
 			AND s_trans.lang_code = $1
 			AND o_trans.lang_code = $1`
+
+// AllCompliances returns a slice with all paragraphs
+func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
+	rows, err := db.Query(complianceQuery, lang)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	cs := make([]*Compliance, 0)
+	for rows.Next() {
+		c := new(Compliance)
+		err := rows.Scan(&c.ID, &c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance)
+		if err != nil {
+			return nil, err
+		}
+		cs = append(cs, c)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return cs, nil
+}
+
+// GetCompliance Returns a single paragraph given a Paragraph.UUID
+func (db *DB) GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error) {
+	c := new(Compliance)
+	var cQueryBuilder strings.Builder
+	cQueryBuilder.WriteString(complianceQuery)
+	cQueryBuilder.WriteString(" AND paragraph_compliance.id = $2")
+	query := cQueryBuilder.String()
+	row := db.QueryRow(query, lang, compliance.ID)
+	err := row.Scan(&c.ID, &c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}

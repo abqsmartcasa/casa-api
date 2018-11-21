@@ -67,3 +67,45 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
+
+func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	compliances, err := env.db.AllCompliances(lang)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	csJSON, err := json.Marshal(compliances)
+	res := responseData{csJSON}
+	data, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Header().Set("Content-Type", "Content-Type: application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	compliance := models.Compliance{}
+	complianceID, err := strconv.Atoi(vars["key"])
+	compliance.ID = complianceID
+	c, err := env.db.GetCompliance(lang, compliance)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	cJSON, err := json.Marshal(c)
+	res := responseData{cJSON}
+	data, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Header().Set("Content-Type", "Content-Type: application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}

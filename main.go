@@ -31,6 +31,12 @@ func main() {
 	paragraphs.Use(paragraphIncludes.Middleware)
 	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
 	paragraphs.HandleFunc("/{key}", env.paragraph).Methods("GET")
+	complianceIncludes := includeCheck{validParams: []string{}}
+	compliances := r.PathPrefix("/compliances").Subrouter()
+	compliances.Use(langCheck)
+	compliances.Use(complianceIncludes.Middleware)
+	compliances.HandleFunc("", env.compliances).Methods("GET")
+	compliances.HandleFunc("/{key}", env.compliances).Methods("GET")
 
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)

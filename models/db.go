@@ -9,6 +9,8 @@ import (
 type Datastore interface {
 	AllParagraphs(lang interface{}) ([]*Paragraph, error)
 	GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error)
+	AllCompliances(lang interface{}) ([]*Compliance, error)
+	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
 }
 
 type DB struct {
