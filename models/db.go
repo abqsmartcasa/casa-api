@@ -13,6 +13,10 @@ type Datastore interface {
 	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
 	AllReports(lang interface{}) ([]*Report, error)
 	GetReport(lang interface{}, report Report) (*Report, error)
+	AllCategoryTags(lang interface{}) ([]*CategoryTag, error)
+	GetCategoryTag(lang interface{}, categoryTag CategoryTag) (*CategoryTag, error)
+	AllSpecificTags(lang interface{}) ([]*SpecificTag, error)
+	GetSpecificTag(lang interface{}, specificTag SpecificTag) (*SpecificTag, error)
 }
 
 type DB struct {

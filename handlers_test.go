@@ -82,6 +82,42 @@ func (mdb *mockDB) GetReport(lang interface{}, report models.Report) (*models.Re
 	return c, nil
 }
 
+func (mdb *mockDB) AllCategoryTags(lang interface{}) ([]*models.CategoryTag, error) {
+	cts := make([]*models.CategoryTag, 0)
+	cts = append(cts, &models.CategoryTag{
+		ID:    1,
+		Value: "I. Use of Force",
+	})
+	return cts, nil
+}
+
+func (mdb *mockDB) GetCategoryTag(lang interface{}, categoryTag models.CategoryTag) (*models.CategoryTag, error) {
+	ct := &models.CategoryTag{
+		ID:    1,
+		Value: "I. Use of Force",
+	}
+	return ct, nil
+}
+
+func (mdb *mockDB) AllSpecificTags(lang interface{}) ([]*models.SpecificTag, error) {
+	sts := make([]*models.SpecificTag, 0)
+	sts = append(sts, &models.SpecificTag{
+		ID:         1,
+		Value:      "Use of Force Principles",
+		CategoryID: 1,
+	})
+	return sts, nil
+}
+
+func (mdb *mockDB) GetSpecificTag(lang interface{}, specificTag models.SpecificTag) (*models.SpecificTag, error) {
+	st := &models.SpecificTag{
+		ID:         1,
+		Value:      "Use of Force Principles",
+		CategoryID: 1,
+	}
+	return st, nil
+}
+
 func TestHandlers(t *testing.T) {
 	router := mux.NewRouter()
 	env := Env{db: &mockDB{}}
@@ -91,7 +127,10 @@ func TestHandlers(t *testing.T) {
 	router.HandleFunc("/compliances/{key}", env.compliance)
 	router.HandleFunc("/reports", env.reports)
 	router.HandleFunc("/reports/{key}", env.report)
-
+	router.HandleFunc("/categorytags", env.categoryTags)
+	router.HandleFunc("/categorytags/{key}", env.categoryTag)
+	router.HandleFunc("/specifictags", env.specificTags)
+	router.HandleFunc("/specifictags/{key}", env.specificTag)
 	tests := []struct {
 		description string
 		URL         string
@@ -103,6 +142,10 @@ func TestHandlers(t *testing.T) {
 		{"compliance by key", "/compliances/13", "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"},
 		{"all reports", "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
 		{"report by key", "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
+		{"all category tags", "/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"category tag by key", "/categorytags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
+		{"all specific tags", "/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
+		{"specific tag by key", "/specifictags/1", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
 	}
 	for _, test := range tests {
 		rr := httptest.NewRecorder()

@@ -122,3 +122,59 @@ func (env *Env) report(w http.ResponseWriter, r *http.Request) {
 	}
 	responseJSON(w, rpt)
 }
+
+func (env *Env) categoryTags(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	categoryTags, err := env.db.AllCategoryTags(lang)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, categoryTags)
+}
+
+func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	categoryTag := models.CategoryTag{}
+	categoryTagID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	categoryTag.ID = categoryTagID
+	ct, err := env.db.GetCategoryTag(lang, categoryTag)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, ct)
+}
+
+func (env *Env) specificTags(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	specificTags, err := env.db.AllSpecificTags(lang)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, specificTags)
+}
+
+func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	specificTag := models.SpecificTag{}
+	specificTagID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	specificTag.ID = specificTagID
+	st, err := env.db.GetSpecificTag(lang, specificTag)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, st)
+}
