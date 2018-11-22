@@ -15,21 +15,19 @@ type Env struct {
 	db models.Datastore
 }
 
-type responseData struct {
-	Data json.RawMessage `json:"data"`
-}
+func responseJSON(w http.ResponseWriter, payload interface{}) {
 
-func (env *Env) paragraphs(w http.ResponseWriter, r *http.Request) {
+	type responseData struct {
+		Data json.RawMessage `json:"data"`
+	}
 
-	lang := context.Get(r, "lang")
-	paragraphs, err := env.db.AllParagraphs(lang)
+	JSON, err := json.Marshal(payload)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	psJSON, err := json.Marshal(paragraphs)
-	res := responseData{psJSON}
-	data, err := json.Marshal(res)
+	response := responseData{JSON}
+	data, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -37,6 +35,16 @@ func (env *Env) paragraphs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "Content-Type: application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
+}
+
+func (env *Env) paragraphs(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	paragraphs, err := env.db.AllParagraphs(lang)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, paragraphs)
 }
 
 func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
@@ -56,16 +64,7 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	pJSON, err := json.Marshal(p)
-	res := responseData{pJSON}
-	data, err := json.Marshal(res)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	w.Header().Set("Content-Type", "Content-Type: application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	responseJSON(w, p)
 }
 
 func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
@@ -75,16 +74,7 @@ func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	csJSON, err := json.Marshal(compliances)
-	res := responseData{csJSON}
-	data, err := json.Marshal(res)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	w.Header().Set("Content-Type", "Content-Type: application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	responseJSON(w, compliances)
 }
 
 func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
@@ -92,20 +82,43 @@ func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	compliance := models.Compliance{}
 	complianceID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 	compliance.ID = complianceID
 	c, err := env.db.GetCompliance(lang, compliance)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	cJSON, err := json.Marshal(c)
-	res := responseData{cJSON}
-	data, err := json.Marshal(res)
+	responseJSON(w, c)
+}
+
+func (env *Env) reports(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	reports, err := env.db.AllReports(lang)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Header().Set("Content-Type", "Content-Type: application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	responseJSON(w, reports)
+}
+
+func (env *Env) report(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	report := models.Report{}
+	reportID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	report.ID = reportID
+	rpt, err := env.db.GetReport(lang, report)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, rpt)
 }

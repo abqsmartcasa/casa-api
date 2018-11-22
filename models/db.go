@@ -11,6 +11,8 @@ type Datastore interface {
 	GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error)
 	AllCompliances(lang interface{}) ([]*Compliance, error)
 	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
+	AllReports(lang interface{}) ([]*Report, error)
+	GetReport(lang interface{}, report Report) (*Report, error)
 }
 
 type DB struct {

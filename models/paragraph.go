@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Paragraph model for paragraphs
+// Paragraph model for CASA paragraphs
 type Paragraph struct {
 	UUID            string        `json:"-"`
 	ID              int           `json:"id"`
@@ -53,7 +53,7 @@ func (db *DB) AllParagraphs(lang interface{}) ([]*Paragraph, error) {
 	return ps, nil
 }
 
-// GetParagraph Returns a single paragraph given a Paragraph.UUID
+// GetParagraph Returns a single paragraph given a Paragraph.ID
 func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error) {
 	p := new(Paragraph)
 	includeParams := strings.Split(include, ",")

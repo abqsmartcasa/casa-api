@@ -57,6 +57,31 @@ func (mdb *mockDB) GetCompliance(lang interface{}, compliance models.Compliance)
 	return c, nil
 }
 
+func (mdb *mockDB) AllReports(lang interface{}) ([]*models.Report, error) {
+	rpts := make([]*models.Report, 0)
+	rpts = append(rpts, &models.Report{
+		ID:          1,
+		ReportName:  "IMR-1",
+		ReportTitle: "Monitor's First Report",
+		PublishDate: "2015-11-23",
+		PeriodBegin: "2015-02-01",
+		PeriodEnd:   "2015-05-31",
+	})
+	return rpts, nil
+}
+
+func (mdb *mockDB) GetReport(lang interface{}, report models.Report) (*models.Report, error) {
+	c := &models.Report{
+		ID:          1,
+		ReportName:  "IMR-1",
+		ReportTitle: "Monitor's First Report",
+		PublishDate: "2015-11-23",
+		PeriodBegin: "2015-02-01",
+		PeriodEnd:   "2015-05-31",
+	}
+	return c, nil
+}
+
 func TestParagraphs(t *testing.T) {
 	rr := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/paragraphs", nil)
@@ -116,6 +141,38 @@ func TestCompliance(t *testing.T) {
 	router.HandleFunc("/compliances/{key}", env.compliance)
 	router.ServeHTTP(rr, req)
 	expected := "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"
+	if expected != rr.Body.String() {
+		t.Errorf("\n...expected = %v\n...obtained = %v", expected, rr.Body.String())
+	}
+}
+
+func TestReports(t *testing.T) {
+	rr := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/reports", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	router := mux.NewRouter()
+	env := Env{db: &mockDB{}}
+	router.HandleFunc("/reports", env.reports)
+	router.ServeHTTP(rr, req)
+	expected := "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"
+	if expected != rr.Body.String() {
+		t.Errorf("\n...expected = %v\n...obtained = %v", expected, rr.Body.String())
+	}
+}
+
+func TestReport(t *testing.T) {
+	rr := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/reports/1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	router := mux.NewRouter()
+	env := Env{db: &mockDB{}}
+	router.HandleFunc("/reports/{key}", env.report)
+	router.ServeHTTP(rr, req)
+	expected := "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"
 	if expected != rr.Body.String() {
 		t.Errorf("\n...expected = %v\n...obtained = %v", expected, rr.Body.String())
 	}

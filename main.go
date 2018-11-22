@@ -36,7 +36,11 @@ func main() {
 	compliances.Use(langCheck)
 	compliances.Use(complianceIncludes.Middleware)
 	compliances.HandleFunc("", env.compliances).Methods("GET")
-	compliances.HandleFunc("/{key}", env.compliances).Methods("GET")
+	compliances.HandleFunc("/{key}", env.compliance).Methods("GET")
+	reports := r.PathPrefix("/reports").Subrouter()
+	reports.Use(langCheck)
+	reports.HandleFunc("", env.reports).Methods("GET")
+	reports.HandleFunc("/{key}", env.report).Methods("GET")
 
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
