@@ -84,7 +84,7 @@ func (db *DB) AllSpecificTags(lang interface{}) ([]*SpecificTag, error) {
 	sts := make([]*SpecificTag, 0)
 	for rows.Next() {
 		st := new(SpecificTag)
-		err := rows.Scan(&st.ID, &st.Value)
+		err := rows.Scan(&st.ID, &st.Value, &st.CategoryID)
 		if err != nil {
 			return nil, err
 		}
@@ -104,9 +104,86 @@ func (db *DB) GetSpecificTag(lang interface{}, specificTag SpecificTag) (*Specif
 	stQueryBuilder.WriteString(" AND lkp_casa_specific.id = $2")
 	query := stQueryBuilder.String()
 	row := db.QueryRow(query, lang, specificTag.ID)
-	err := row.Scan(&st.ID, &st.Value)
+	err := row.Scan(&st.ID, &st.Value, &st.CategoryID)
 	if err != nil {
 		return nil, err
 	}
 	return st, nil
+}
+
+// GetCategoryTagsByParagraph returns a slice with category tags given a Paragraph.ID
+func (db *DB) GetCategoryTagsByParagraph(lang interface{}, paragraph Paragraph) ([]*CategoryTag, error) {
+	query := `SELECT
+			"lkp_casa_category"."id",
+			"trans_casa_category"."text" AS "value"
+		FROM
+			"trans_casa_category"
+			JOIN "lkp_casa_category"
+			ON "trans_casa_category"."casa_category_id" = "lkp_casa_category"."id"
+			JOIN "lkp_casa_specific"
+			ON "lkp_casa_specific"."category_id" = "lkp_casa_category"."id"
+			JOIN "paragraph_casa_specific"
+			ON "paragraph_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
+			JOIN paragraph
+			ON "paragraph"."uuid" = paragraph_casa_specific.paragraph_uuid
+		WHERE
+			"trans_casa_category"."lang_code" = 'en'
+			AND
+			"paragraph"."paragraph_number" = $2`
+	rows, err := db.Query(query, lang, paragraph.ID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	cts := make([]*CategoryTag, 0)
+	for rows.Next() {
+		ct := new(CategoryTag)
+		err := rows.Scan(&ct.ID, &ct.Value)
+		if err != nil {
+			return nil, err
+		}
+		cts = append(cts, ct)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return cts, nil
+}
+
+// GetSpecificTagsByParagraph returns a slice with specific tags given a Paragraph.ID
+func (db *DB) GetSpecificTagsByParagraph(lang interface{}, paragraph Paragraph) ([]*SpecificTag, error) {
+	query := `SELECT
+			"lkp_casa_specific"."id",
+			"trans_casa_specific"."text" AS "value",
+			"lkp_casa_specific"."category_id"
+		FROM
+			"trans_casa_specific"
+			JOIN "lkp_casa_specific"
+			ON "trans_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
+			JOIN "paragraph_casa_specific"
+			ON "paragraph_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
+			JOIN paragraph
+			ON "paragraph"."uuid" = paragraph_casa_specific.paragraph_uuid
+		WHERE
+			"trans_casa_specific"."lang_code" = $1
+			AND
+			"paragraph"."paragraph_number" = $2`
+	rows, err := db.Query(query, lang, paragraph.ID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	sts := make([]*SpecificTag, 0)
+	for rows.Next() {
+		st := new(SpecificTag)
+		err := rows.Scan(&st.ID, &st.Value, &st.CategoryID)
+		if err != nil {
+			return nil, err
+		}
+		sts = append(sts, st)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return sts, nil
 }

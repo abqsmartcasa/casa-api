@@ -9,14 +9,18 @@ import (
 type Datastore interface {
 	AllParagraphs(lang interface{}) ([]*Paragraph, error)
 	GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error)
+	GetParagraphsBySpecificTag(lang interface{}, specificTag SpecificTag) ([]*Paragraph, error)
+	GetParagraphsByCategoryTag(lang interface{}, categoryTag CategoryTag) ([]*Paragraph, error)
 	AllCompliances(lang interface{}) ([]*Compliance, error)
 	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
 	AllReports(lang interface{}) ([]*Report, error)
 	GetReport(lang interface{}, report Report) (*Report, error)
 	AllCategoryTags(lang interface{}) ([]*CategoryTag, error)
 	GetCategoryTag(lang interface{}, categoryTag CategoryTag) (*CategoryTag, error)
+	GetCategoryTagsByParagraph(lang interface{}, paragraph Paragraph) ([]*CategoryTag, error)
 	AllSpecificTags(lang interface{}) ([]*SpecificTag, error)
 	GetSpecificTag(lang interface{}, specificTag SpecificTag) (*SpecificTag, error)
+	GetSpecificTagsByParagraph(lang interface{}, paragraph Paragraph) ([]*SpecificTag, error)
 }
 
 type DB struct {

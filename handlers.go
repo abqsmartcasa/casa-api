@@ -67,6 +67,42 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	responseJSON(w, p)
 }
 
+func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	specificTag := models.SpecificTag{}
+	specificTagID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	specificTag.ID = specificTagID
+	p, err := env.db.GetParagraphsBySpecificTag(lang, specificTag)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, p)
+}
+
+func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	categoryTag := models.CategoryTag{}
+	categoryTagID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	categoryTag.ID = categoryTagID
+	p, err := env.db.GetParagraphsByCategoryTag(lang, categoryTag)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, p)
+}
+
 func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
 	compliances, err := env.db.AllCompliances(lang)
@@ -151,6 +187,24 @@ func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
 	responseJSON(w, ct)
 }
 
+func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	paragraph := models.Paragraph{}
+	paragraphID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	paragraph.ID = paragraphID
+	cts, err := env.db.GetCategoryTagsByParagraph(lang, paragraph)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, cts)
+}
+
 func (env *Env) specificTags(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
 	specificTags, err := env.db.AllSpecificTags(lang)
@@ -177,4 +231,22 @@ func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responseJSON(w, st)
+}
+
+func (env *Env) specificTagsByParagraph(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	paragraph := models.Paragraph{}
+	paragraphID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	paragraph.ID = paragraphID
+	sts, err := env.db.GetSpecificTagsByParagraph(lang, paragraph)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	responseJSON(w, sts)
 }
