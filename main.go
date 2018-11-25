@@ -25,7 +25,7 @@ func main() {
 	}
 	env := &Env{db: db}
 	r := mux.NewRouter()
-	paragraphIncludes := includeCheck{validParams: []string{"compliances"}}
+	paragraphIncludes := includeCheck{validParams: []string{"compliances", "tags"}}
 
 	paragraphs := r.PathPrefix("/paragraphs").Subrouter()
 	paragraphs.Use(langCheck)

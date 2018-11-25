@@ -57,11 +57,11 @@ func (icw *includeCheck) Middleware(next http.Handler) http.Handler {
 		v := r.URL.Query()
 		include := v.Get("include")
 		if len(icw.validParams) == 0 {
-			http.Error(w, "HTTP 400: include not supported on this resource", 400)
+			http.Error(w, "400 Bad Request: include not supported on this resource", 400)
 			return
 		}
 		if key == "" && include != "" {
-			http.Error(w, "HTTP 400: include not supported on this resource", 400)
+			http.Error(w, "400 Bad Request: include not supported on this resource", 400)
 			return
 		}
 		if include != "" {
@@ -73,7 +73,7 @@ func (icw *includeCheck) Middleware(next http.Handler) http.Handler {
 					invalids.WriteString(elem)
 					invalids.WriteString(" ")
 				}
-				http.Error(w, fmt.Sprintf("HTTP 400: invalid includes parameters: %s", invalids.String()), 400)
+				http.Error(w, fmt.Sprintf("400 Bad Request: invalid includes parameters: %s", invalids.String()), 400)
 				return
 			}
 		}
