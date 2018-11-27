@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/gorilla/context"
 	"golang.org/x/text/language"
 )
-
-type middleware func(http.HandlerFunc) http.HandlerFunc
 
 var matcher = language.NewMatcher([]language.Tag{
 	language.English,
@@ -56,12 +53,8 @@ func (icw *includeCheck) Middleware(next http.Handler) http.Handler {
 		key := vars["key"]
 		v := r.URL.Query()
 		include := v.Get("include")
-		if len(icw.validParams) == 0 {
-			http.Error(w, "400 Bad Request: include not supported on this resource", 400)
-			return
-		}
 		if key == "" && include != "" {
-			http.Error(w, "400 Bad Request: include not supported on this resource", 400)
+			http.Error(w, http.StatusText(400), 400)
 			return
 		}
 		if include != "" {
@@ -73,7 +66,7 @@ func (icw *includeCheck) Middleware(next http.Handler) http.Handler {
 					invalids.WriteString(elem)
 					invalids.WriteString(" ")
 				}
-				http.Error(w, fmt.Sprintf("400 Bad Request: invalid includes parameters: %s", invalids.String()), 400)
+				http.Error(w, http.StatusText(400), 400)
 				return
 			}
 		}

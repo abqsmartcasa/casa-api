@@ -23,11 +23,12 @@ func (mdb *mockDB) AllParagraphs(lang interface{}) ([]*models.Paragraph, error) 
 }
 
 func (mdb *mockDB) GetParagraph(lang interface{}, paragraph models.Paragraph, include string) (*models.Paragraph, error) {
-	p := &models.Paragraph{
-		ID:              13,
-		ParagraphNumber: 13,
-		ParagraphTitle:  "test",
-		ParagraphText:   "test",
+	p := &models.Paragraph{}
+	if paragraph.ID == 14 {
+		p.ID = 14
+		p.ParagraphNumber = 14
+		p.ParagraphTitle = "test"
+		p.ParagraphText = "test"
 	}
 	return p, nil
 }
@@ -68,13 +69,14 @@ func (mdb *mockDB) AllCompliances(lang interface{}) ([]*models.Compliance, error
 }
 
 func (mdb *mockDB) GetCompliance(lang interface{}, compliance models.Compliance) (*models.Compliance, error) {
-	c := &models.Compliance{
-		ID:                  13,
-		ReportID:            2,
-		ParagraphID:         3,
-		PrimaryCompliance:   "In Compliance",
-		SecondaryCompliance: "Not In Compliance",
-		OperationCompliance: "Not In Compliance",
+	c := &models.Compliance{}
+	if compliance.ID == 13 {
+		c.ID = 13
+		c.ReportID = 2
+		c.ParagraphID = 3
+		c.PrimaryCompliance = "In Compliance"
+		c.SecondaryCompliance = "Not In Compliance"
+		c.OperationCompliance = "Not In Compliance"
 	}
 	return c, nil
 }
@@ -93,15 +95,16 @@ func (mdb *mockDB) AllReports(lang interface{}) ([]*models.Report, error) {
 }
 
 func (mdb *mockDB) GetReport(lang interface{}, report models.Report) (*models.Report, error) {
-	c := &models.Report{
-		ID:          1,
-		ReportName:  "IMR-1",
-		ReportTitle: "Monitor's First Report",
-		PublishDate: "2015-11-23",
-		PeriodBegin: "2015-02-01",
-		PeriodEnd:   "2015-05-31",
+	rpt := &models.Report{}
+	if report.ID == 1 {
+		rpt.ID = 1
+		rpt.ReportName = "IMR-1"
+		rpt.ReportTitle = "Monitor's First Report"
+		rpt.PublishDate = "2015-11-23"
+		rpt.PeriodBegin = "2015-02-01"
+		rpt.PeriodEnd = "2015-05-31"
 	}
-	return c, nil
+	return rpt, nil
 }
 
 func (mdb *mockDB) AllCategoryTags(lang interface{}) ([]*models.CategoryTag, error) {
@@ -177,21 +180,27 @@ func TestHandlers(t *testing.T) {
 	router.HandleFunc("/specifictags/{key}/paragraphs", env.paragraphsBySpecificTag)
 	tests := []struct {
 		description string
+		Code        int
 		URL         string
 		expected    string
 	}{
-		{"all paragraphs", "/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"paragraph by key", "/paragraphs/13", "{\"data\":{\"id\":13,\"paragraph_number\":13,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}}"},
-		{"paragraphs by category tag", "/categorytags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"paragraphs by specific tag", "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"all compliances", "/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
-		{"compliance by key", "/compliances/13", "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"},
-		{"all reports", "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
-		{"report by key", "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
-		{"all category tags", "/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
-		{"category tag by key", "/categorytags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
-		{"all specific tags", "/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
-		{"specific tag by key", "/specifictags/1", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
+		{"all paragraphs", 200, "/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
+		{"paragraph by key", 200, "/paragraphs/14", "{\"data\":{\"id\":14,\"paragraph_number\":14,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}}"},
+		{"invalid paragraph key", 404, "/paragraphs/13", ""},
+		{"paragraphs by category tag", 200, "/categorytags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
+		{"paragraphs by specific tag", 200, "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
+		{"all compliances", 200, "/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliance by key", 200, "/compliances/13", "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"},
+		{"invalid compliances key", 404, "/compliances/42", ""},
+		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
+		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
+		{"invalid report key", 404, "/reports/42", ""},
+		{"all category tags", 200, "/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"category tag by key", 200, "/categorytags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
+		{"category tags by paragraph", 200, "/paragraphs/14/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"all specific tags", 200, "/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
+		{"specific tag by key", 200, "/specifictags/14", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
+		{"specific tags by paragraph", 200, "/paragraphs/14/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
 	}
 	for _, test := range tests {
 		rr := httptest.NewRecorder()
@@ -200,8 +209,13 @@ func TestHandlers(t *testing.T) {
 			t.Fatal(err)
 		}
 		router.ServeHTTP(rr, req)
-		if test.expected != rr.Body.String() {
-			t.Errorf("\n%v\n...expected = %v\n...obtained = %v", test.description, test.expected, rr.Body.String())
+		if test.Code != rr.Code {
+			t.Errorf("\n%v\nhandler returned wrong status code: got %v want %v",
+				test.description, rr.Code, test.Code)
+		}
+		if test.expected != rr.Body.String() && rr.Code == http.StatusOK {
+			t.Errorf("\n%v\n...expected = %v\n...obtained = %v",
+				test.description, test.expected, rr.Body.String())
 		}
 	}
 }

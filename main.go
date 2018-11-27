@@ -69,13 +69,14 @@ func main() {
 	specificTags.Use(specificTagsIncludes.Middleware)
 	specificTags.HandleFunc("", env.specificTags).Methods("GET")
 	specificTags.HandleFunc("/{key}", env.specificTag).Methods("GET")
-
-	specificTagsParagraphs := r.PathPrefix("/specifictags/{key}").Subrouter()
-	specificTagsParagraphsIncludes := includeCheck{validParams: []string{}}
-	specificTags.Use(langCheck)
-	specificTags.Use(specificTagsParagraphsIncludes.Middleware)
-	specificTagsParagraphs.HandleFunc("/paragraphs", env.paragraphsBySpecificTag).Methods("GET")
-
+	specificTags.HandleFunc("/{key}/paragraphs", env.paragraphsBySpecificTag).Methods("GET")
+	/*
+		specificTagsParagraphs := r.PathPrefix("/specifictags/{key}").Subrouter()
+		specificTagsParagraphsIncludes := includeCheck{validParams: []string{}}
+		specificTagsParagraphs.Use(langCheck)
+		specificTagsParagraphs.Use(specificTagsParagraphsIncludes.Middleware)
+		specificTagsParagraphs.HandleFunc("/paragraphs", env.paragraphsBySpecificTag).Methods("GET")
+	*/
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
 }
