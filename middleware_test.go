@@ -33,6 +33,30 @@ func TestLangCheck(t *testing.T) {
 	}
 }
 
+func TestHandleKey(t *testing.T) {
+	var tests = []struct {
+		key  string
+		code int
+	}{
+		{"/14", 200},
+		{"/test", 400},
+	}
+
+	for _, test := range tests {
+		testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+		rr := httptest.NewRecorder()
+		handler := handleKey(testHandler)
+		router := mux.NewRouter()
+		router.Handle("/{key}", handler)
+		req := httptest.NewRequest("GET", test.key, nil)
+		router.ServeHTTP(rr, req)
+		if test.code != rr.Code {
+			t.Errorf("\nhandler returned wrong status code: got %v want %v",
+				rr.Code, test.code)
+		}
+	}
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 	return
 }

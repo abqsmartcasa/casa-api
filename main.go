@@ -30,6 +30,7 @@ func main() {
 	paragraphs := r.PathPrefix("/paragraphs").Subrouter()
 	paragraphs.Use(langCheck)
 	paragraphs.Use(paragraphIncludes.Middleware)
+	paragraphs.Use(handleKey)
 	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
 	paragraphs.HandleFunc("/{key}", env.paragraph).Methods("GET")
 
@@ -37,6 +38,7 @@ func main() {
 	paragraphRelationshipsIncludes := includeCheck{validParams: []string{}}
 	paragraphsRelationships.Use(langCheck)
 	paragraphsRelationships.Use(paragraphRelationshipsIncludes.Middleware)
+	paragraphsRelationships.Use(handleKey)
 	paragraphsRelationships.HandleFunc("/categorytags", env.categoryTagsByParagraph).Methods("GET")
 	paragraphsRelationships.HandleFunc("/specifictags", env.specificTagsByParagraph).Methods("GET")
 	paragraphsRelationships.HandleFunc("/compliances", env.compliancesByParagraph).Methods("GET")
@@ -45,6 +47,7 @@ func main() {
 	compliances := r.PathPrefix("/compliances").Subrouter()
 	compliances.Use(langCheck)
 	compliances.Use(complianceIncludes.Middleware)
+	compliances.Use(handleKey)
 	compliances.HandleFunc("", env.compliances).Methods("GET")
 	compliances.HandleFunc("/{key}", env.compliance).Methods("GET")
 
@@ -52,6 +55,7 @@ func main() {
 	reportsIncludes := includeCheck{validParams: []string{}}
 	reports.Use(langCheck)
 	reports.Use(reportsIncludes.Middleware)
+	reports.Use(handleKey)
 	reports.HandleFunc("", env.reports).Methods("GET")
 	reports.HandleFunc("/{key}", env.report).Methods("GET")
 
@@ -59,6 +63,7 @@ func main() {
 	categoryTagsIncludes := includeCheck{validParams: []string{"specifictags"}}
 	categoryTags.Use(langCheck)
 	categoryTags.Use(categoryTagsIncludes.Middleware)
+	categoryTags.Use(handleKey)
 	categoryTags.HandleFunc("", env.categoryTags).Methods("GET")
 	categoryTags.HandleFunc("/{key}", env.categoryTag).Methods("GET")
 	categoryTags.HandleFunc("/{key}/paragraphs", env.paragraphsByCategoryTag).Methods("GET")
@@ -67,6 +72,7 @@ func main() {
 	specificTagsIncludes := includeCheck{validParams: []string{}}
 	specificTags.Use(langCheck)
 	specificTags.Use(specificTagsIncludes.Middleware)
+	specificTags.Use(handleKey)
 	specificTags.HandleFunc("", env.specificTags).Methods("GET")
 	specificTags.HandleFunc("/{key}", env.specificTag).Methods("GET")
 	specificTags.HandleFunc("/{key}/paragraphs", env.paragraphsBySpecificTag).Methods("GET")

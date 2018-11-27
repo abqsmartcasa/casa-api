@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -38,6 +39,21 @@ func langCheck(next http.Handler) http.Handler {
 			context.Set(r, "lang", "en")
 		} else {
 			context.Set(r, "lang", tag.String())
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func handleKey(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		if len(vars) > 0 {
+			key, err := strconv.Atoi(vars["key"])
+			if err != nil {
+				http.Error(w, http.StatusText(400), 400)
+				return
+			}
+			context.Set(r, "key", key)
 		}
 		next.ServeHTTP(w, r)
 	})

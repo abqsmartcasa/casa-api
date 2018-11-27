@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/apdforward/apdf_api/models"
 
 	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
 )
 
 type Env struct {
@@ -54,14 +52,8 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
 	v := r.URL.Query()
 	include := v.Get("include")
-	vars := mux.Vars(r)
 	paragraph := models.Paragraph{}
-	paragraphID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	paragraph.ID = paragraphID
+	paragraph.ID = context.Get(r, "key").(int)
 	p, err := env.db.GetParagraph(lang, paragraph, include)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -76,14 +68,8 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	specificTag := models.SpecificTag{}
-	specificTagID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	specificTag.ID = specificTagID
+	specificTag.ID = context.Get(r, "key").(int)
 	ps, err := env.db.GetParagraphsBySpecificTag(lang, specificTag)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -98,14 +84,8 @@ func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) 
 
 func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	categoryTag := models.CategoryTag{}
-	categoryTagID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	categoryTag.ID = categoryTagID
+	categoryTag.ID = context.Get(r, "key").(int)
 	ps, err := env.db.GetParagraphsByCategoryTag(lang, categoryTag)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -130,14 +110,8 @@ func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	compliance := models.Compliance{}
-	complianceID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	compliance.ID = complianceID
+	compliance.ID = context.Get(r, "key").(int)
 	c, err := env.db.GetCompliance(lang, compliance)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -152,14 +126,8 @@ func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) compliancesByParagraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	paragraph := models.Paragraph{}
-	paragraphID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	paragraph.ID = paragraphID
+	paragraph.ID = context.Get(r, "key").(int)
 	cs, err := env.db.GetCompliancesByParagraph(lang, paragraph)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -184,14 +152,8 @@ func (env *Env) reports(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) report(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	report := models.Report{}
-	reportID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	report.ID = reportID
+	report.ID = context.Get(r, "key").(int)
 	rpt, err := env.db.GetReport(lang, report)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -216,14 +178,8 @@ func (env *Env) categoryTags(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	categoryTag := models.CategoryTag{}
-	categoryTagID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	categoryTag.ID = categoryTagID
+	categoryTag.ID = context.Get(r, "key").(int)
 	ct, err := env.db.GetCategoryTag(lang, categoryTag)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -238,14 +194,8 @@ func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	paragraph := models.Paragraph{}
-	paragraphID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	paragraph.ID = paragraphID
+	paragraph.ID = context.Get(r, "key").(int)
 	cts, err := env.db.GetCategoryTagsByParagraph(lang, paragraph)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -270,14 +220,8 @@ func (env *Env) specificTags(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	specificTag := models.SpecificTag{}
-	specificTagID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	specificTag.ID = specificTagID
+	specificTag.ID = context.Get(r, "key").(int)
 	st, err := env.db.GetSpecificTag(lang, specificTag)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -292,14 +236,8 @@ func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) specificTagsByParagraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	vars := mux.Vars(r)
 	paragraph := models.Paragraph{}
-	paragraphID, err := strconv.Atoi(vars["key"])
-	if err != nil {
-		http.Error(w, http.StatusText(400), 400)
-		return
-	}
-	paragraph.ID = paragraphID
+	paragraph.ID = context.Get(r, "key").(int)
 	sts, err := env.db.GetSpecificTagsByParagraph(lang, paragraph)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
