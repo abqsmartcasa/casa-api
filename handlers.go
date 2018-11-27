@@ -89,7 +89,7 @@ func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	if ps == nil {
+	if len(ps) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -111,7 +111,7 @@ func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	if ps == nil {
+	if len(ps) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -229,7 +229,7 @@ func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	if cts == nil {
+	if len(cts) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -283,7 +283,7 @@ func (env *Env) specificTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	if sts == nil {
+	if len(sts) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}

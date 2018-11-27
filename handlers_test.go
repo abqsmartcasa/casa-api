@@ -35,23 +35,27 @@ func (mdb *mockDB) GetParagraph(lang interface{}, paragraph models.Paragraph, in
 
 func (mdb *mockDB) GetParagraphsByCategoryTag(lang interface{}, categoryTag models.CategoryTag) ([]*models.Paragraph, error) {
 	ps := make([]*models.Paragraph, 0)
-	ps = append(ps, &models.Paragraph{
-		ID:              42,
-		ParagraphNumber: 42,
-		ParagraphTitle:  "test",
-		ParagraphText:   "test",
-	})
+	if categoryTag.ID == 1 {
+		ps = append(ps, &models.Paragraph{
+			ID:              42,
+			ParagraphNumber: 42,
+			ParagraphTitle:  "test",
+			ParagraphText:   "test",
+		})
+	}
 	return ps, nil
 }
 
 func (mdb *mockDB) GetParagraphsBySpecificTag(lang interface{}, specificTag models.SpecificTag) ([]*models.Paragraph, error) {
 	ps := make([]*models.Paragraph, 0)
-	ps = append(ps, &models.Paragraph{
-		ID:              42,
-		ParagraphNumber: 42,
-		ParagraphTitle:  "test",
-		ParagraphText:   "test",
-	})
+	if specificTag.ID == 1 {
+		ps = append(ps, &models.Paragraph{
+			ID:              42,
+			ParagraphNumber: 42,
+			ParagraphTitle:  "test",
+			ParagraphText:   "test",
+		})
+	}
 	return ps, nil
 }
 
@@ -117,19 +121,22 @@ func (mdb *mockDB) AllCategoryTags(lang interface{}) ([]*models.CategoryTag, err
 }
 
 func (mdb *mockDB) GetCategoryTag(lang interface{}, categoryTag models.CategoryTag) (*models.CategoryTag, error) {
-	ct := &models.CategoryTag{
-		ID:    1,
-		Value: "I. Use of Force",
+	ct := &models.CategoryTag{}
+	if categoryTag.ID == 1 {
+		ct.ID = 1
+		ct.Value = "I. Use of Force"
 	}
 	return ct, nil
 }
 
 func (mdb *mockDB) GetCategoryTagsByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.CategoryTag, error) {
 	cts := make([]*models.CategoryTag, 0)
-	cts = append(cts, &models.CategoryTag{
-		ID:    1,
-		Value: "I. Use of Force",
-	})
+	if paragraph.ID == 14 {
+		cts = append(cts, &models.CategoryTag{
+			ID:    1,
+			Value: "I. Use of Force",
+		})
+	}
 	return cts, nil
 }
 
@@ -144,21 +151,24 @@ func (mdb *mockDB) AllSpecificTags(lang interface{}) ([]*models.SpecificTag, err
 }
 
 func (mdb *mockDB) GetSpecificTag(lang interface{}, specificTag models.SpecificTag) (*models.SpecificTag, error) {
-	st := &models.SpecificTag{
-		ID:         1,
-		Value:      "Use of Force Principles",
-		CategoryID: 1,
+	st := &models.SpecificTag{}
+	if specificTag.ID == 1 {
+		st.ID = 1
+		st.Value = "Use of Force Principles"
+		st.CategoryID = 1
 	}
 	return st, nil
 }
 
 func (mdb *mockDB) GetSpecificTagsByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.SpecificTag, error) {
 	sts := make([]*models.SpecificTag, 0)
-	sts = append(sts, &models.SpecificTag{
-		ID:         1,
-		Value:      "Use of Force Principles",
-		CategoryID: 1,
-	})
+	if paragraph.ID == 14 {
+		sts = append(sts, &models.SpecificTag{
+			ID:         1,
+			Value:      "Use of Force Principles",
+			CategoryID: 1,
+		})
+	}
 	return sts, nil
 }
 func TestHandlers(t *testing.T) {
@@ -188,7 +198,10 @@ func TestHandlers(t *testing.T) {
 		{"paragraph by key", 200, "/paragraphs/14", "{\"data\":{\"id\":14,\"paragraph_number\":14,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}}"},
 		{"invalid paragraph key", 404, "/paragraphs/13", ""},
 		{"paragraphs by category tag", 200, "/categorytags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
+		{"paragraphs by invalid category tag", 404, "/categorytags/13/paragraphs", ""},
 		{"paragraphs by specific tag", 200, "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
+		{"paragraphs by invalid specific tag", 404, "/specifictags/13/paragraphs", ""},
+		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
 		{"all compliances", 200, "/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
 		{"compliance by key", 200, "/compliances/13", "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"},
 		{"invalid compliances key", 404, "/compliances/42", ""},
@@ -197,10 +210,14 @@ func TestHandlers(t *testing.T) {
 		{"invalid report key", 404, "/reports/42", ""},
 		{"all category tags", 200, "/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
 		{"category tag by key", 200, "/categorytags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
+		{"invalid category tag key", 404, "/categorytags/42", ""},
 		{"category tags by paragraph", 200, "/paragraphs/14/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"category tags by invalid paragraph", 404, "/paragraphs/13/categorytags", ""},
 		{"all specific tags", 200, "/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
-		{"specific tag by key", 200, "/specifictags/14", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
+		{"specific tag by key", 200, "/specifictags/1", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
+		{"invalid specific tag key", 404, "/specifictags/42", ""},
 		{"specific tags by paragraph", 200, "/paragraphs/14/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
+		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
 	}
 	for _, test := range tests {
 		rr := httptest.NewRecorder()
