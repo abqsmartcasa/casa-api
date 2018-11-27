@@ -58,7 +58,7 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	paragraph := models.Paragraph{}
 	paragraphID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	paragraph.ID = paragraphID
@@ -80,7 +80,7 @@ func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) 
 	specificTag := models.SpecificTag{}
 	specificTagID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	specificTag.ID = specificTagID
@@ -102,7 +102,7 @@ func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) 
 	categoryTag := models.CategoryTag{}
 	categoryTagID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	categoryTag.ID = categoryTagID
@@ -134,7 +134,7 @@ func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 	compliance := models.Compliance{}
 	complianceID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	compliance.ID = complianceID
@@ -148,6 +148,28 @@ func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responseJSON(w, c, lang)
+}
+
+func (env *Env) compliancesByParagraph(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	vars := mux.Vars(r)
+	paragraph := models.Paragraph{}
+	paragraphID, err := strconv.Atoi(vars["key"])
+	if err != nil {
+		http.Error(w, http.StatusText(400), 400)
+		return
+	}
+	paragraph.ID = paragraphID
+	cs, err := env.db.GetCompliancesByParagraph(lang, paragraph)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	if len(cs) == 0 {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	responseJSON(w, cs, lang)
 }
 
 func (env *Env) reports(w http.ResponseWriter, r *http.Request) {
@@ -166,7 +188,7 @@ func (env *Env) report(w http.ResponseWriter, r *http.Request) {
 	report := models.Report{}
 	reportID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	report.ID = reportID
@@ -198,7 +220,7 @@ func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
 	categoryTag := models.CategoryTag{}
 	categoryTagID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	categoryTag.ID = categoryTagID
@@ -220,7 +242,7 @@ func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 	paragraph := models.Paragraph{}
 	paragraphID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	paragraph.ID = paragraphID
@@ -252,7 +274,7 @@ func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
 	specificTag := models.SpecificTag{}
 	specificTagID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	specificTag.ID = specificTagID
@@ -274,7 +296,7 @@ func (env *Env) specificTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 	paragraph := models.Paragraph{}
 	paragraphID, err := strconv.Atoi(vars["key"])
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, http.StatusText(400), 400)
 		return
 	}
 	paragraph.ID = paragraphID

@@ -33,12 +33,13 @@ func main() {
 	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
 	paragraphs.HandleFunc("/{key}", env.paragraph).Methods("GET")
 
-	paragraphsTags := r.PathPrefix("/paragraphs/{key}").Subrouter()
-	paragraphTagIncludes := includeCheck{validParams: []string{}}
-	paragraphsTags.Use(langCheck)
-	paragraphsTags.Use(paragraphTagIncludes.Middleware)
-	paragraphsTags.HandleFunc("/categorytags", env.categoryTagsByParagraph).Methods("GET")
-	paragraphsTags.HandleFunc("/specifictags", env.specificTagsByParagraph).Methods("GET")
+	paragraphsRelationships := r.PathPrefix("/paragraphs/{key}").Subrouter()
+	paragraphRelationshipsIncludes := includeCheck{validParams: []string{}}
+	paragraphsRelationships.Use(langCheck)
+	paragraphsRelationships.Use(paragraphRelationshipsIncludes.Middleware)
+	paragraphsRelationships.HandleFunc("/categorytags", env.categoryTagsByParagraph).Methods("GET")
+	paragraphsRelationships.HandleFunc("/specifictags", env.specificTagsByParagraph).Methods("GET")
+	paragraphsRelationships.HandleFunc("/compliances", env.compliancesByParagraph).Methods("GET")
 
 	complianceIncludes := includeCheck{validParams: []string{}}
 	compliances := r.PathPrefix("/compliances").Subrouter()
@@ -60,7 +61,6 @@ func main() {
 	categoryTags.Use(categoryTagsIncludes.Middleware)
 	categoryTags.HandleFunc("", env.categoryTags).Methods("GET")
 	categoryTags.HandleFunc("/{key}", env.categoryTag).Methods("GET")
-
 	categoryTags.HandleFunc("/{key}/paragraphs", env.paragraphsByCategoryTag).Methods("GET")
 
 	specificTags := r.PathPrefix("/specifictags").Subrouter()
@@ -70,13 +70,7 @@ func main() {
 	specificTags.HandleFunc("", env.specificTags).Methods("GET")
 	specificTags.HandleFunc("/{key}", env.specificTag).Methods("GET")
 	specificTags.HandleFunc("/{key}/paragraphs", env.paragraphsBySpecificTag).Methods("GET")
-	/*
-		specificTagsParagraphs := r.PathPrefix("/specifictags/{key}").Subrouter()
-		specificTagsParagraphsIncludes := includeCheck{validParams: []string{}}
-		specificTagsParagraphs.Use(langCheck)
-		specificTagsParagraphs.Use(specificTagsParagraphsIncludes.Middleware)
-		specificTagsParagraphs.HandleFunc("/paragraphs", env.paragraphsBySpecificTag).Methods("GET")
-	*/
+
 	http.Handle("/", r)
 	http.ListenAndServe(":3000", nil)
 }
