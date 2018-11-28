@@ -34,7 +34,7 @@ func main() {
 	paragraphs.HandleFunc("", env.paragraphs).Methods("GET")
 	paragraphs.HandleFunc("/{key}", env.paragraph).Methods("GET")
 
-	paragraphsRelationships := r.PathPrefix("/paragraphs/{key}").Subrouter()
+	paragraphsRelationships := paragraphs.PathPrefix("/{key}").Subrouter()
 	paragraphRelationshipsIncludes := includeCheck{validParams: []string{}}
 	paragraphsRelationships.Use(langCheck)
 	paragraphsRelationships.Use(paragraphRelationshipsIncludes.Middleware)

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -111,7 +110,6 @@ func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph, include string
 
 // GetParagraphsBySpecificTag returns a slice with all paragraphs given a SpecificTag.ID
 func (db *DB) GetParagraphsBySpecificTag(lang interface{}, specificTag SpecificTag) ([]*Paragraph, error) {
-	fmt.Println(lang)
 	query := `SELECT
 			paragraph."paragraph_number" AS "id",
 			paragraph."paragraph_number" AS "paragraph_number",

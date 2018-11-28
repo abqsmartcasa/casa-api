@@ -134,6 +134,7 @@ func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) (
 			AND s_trans.lang_code = $1
 			AND o_trans.lang_code = $1
 			AND paragraph.paragraph_number = $2`
+	fmt.Println(paragraph)
 	rows, err := db.Query(query, lang, paragraph.ID)
 	if err != nil {
 		fmt.Println(err)
