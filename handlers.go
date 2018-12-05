@@ -33,6 +33,7 @@ func responseJSON(w http.ResponseWriter, payload interface{}, lang interface{}) 
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Language", fmt.Sprintf("%s", lang))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	//w.Header().Set("Cache-Control", "max-age=3600")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
@@ -129,6 +130,22 @@ func (env *Env) compliancesByParagraph(w http.ResponseWriter, r *http.Request) {
 	paragraph := models.Paragraph{}
 	paragraph.ID = context.Get(r, "key").(int)
 	cs, err := env.db.GetCompliancesByParagraph(lang, paragraph)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	if len(cs) == 0 {
+		http.Error(w, http.StatusText(404), 404)
+		return
+	}
+	responseJSON(w, cs, lang)
+}
+
+func (env *Env) compliancesByReport(w http.ResponseWriter, r *http.Request) {
+	lang := context.Get(r, "lang")
+	report := models.Report{}
+	report.ID = context.Get(r, "key").(int)
+	cs, err := env.db.GetCompliancesByReport(lang, report)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return

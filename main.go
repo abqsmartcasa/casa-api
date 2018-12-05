@@ -58,6 +58,7 @@ func main() {
 	reports.Use(handleKey)
 	reports.HandleFunc("", env.reports).Methods("GET")
 	reports.HandleFunc("/{key}", env.report).Methods("GET")
+	reports.HandleFunc("/{key}/compliances", env.compliancesByReport).Methods("GET")
 
 	categoryTags := r.PathPrefix("/categorytags").Subrouter()
 	categoryTagsIncludes := includeCheck{validParams: []string{"specifictags"}}

@@ -14,6 +14,7 @@ type Datastore interface {
 	AllCompliances(lang interface{}) ([]*Compliance, error)
 	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
 	GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) ([]*Compliance, error)
+	GetCompliancesByReport(lang interface{}, report Report) ([]*Compliance, error)
 	AllReports(lang interface{}) ([]*Report, error)
 	GetReport(lang interface{}, report Report) (*Report, error)
 	AllCategoryTags(lang interface{}) ([]*CategoryTag, error)

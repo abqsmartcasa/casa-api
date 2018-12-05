@@ -100,6 +100,21 @@ func (mdb *mockDB) GetCompliancesByParagraph(lang interface{}, paragraph models.
 	return cs, nil
 }
 
+func (mdb *mockDB) GetCompliancesByReport(lang interface{}, report models.Report) ([]*models.Compliance, error) {
+	cs := make([]*models.Compliance, 0)
+	if report.ID == 2 {
+		cs = append(cs, &models.Compliance{
+			ID:                  1,
+			ReportID:            2,
+			ParagraphID:         14,
+			PrimaryCompliance:   "In Compliance",
+			SecondaryCompliance: "Not In Compliance",
+			OperationCompliance: "Not In Compliance",
+		})
+	}
+	return cs, nil
+}
+
 func (mdb *mockDB) AllReports(lang interface{}) ([]*models.Report, error) {
 	rpts := make([]*models.Report, 0)
 	rpts = append(rpts, &models.Report{
@@ -199,6 +214,7 @@ func TestHandlers(t *testing.T) {
 	router.HandleFunc("/compliances/{key}", env.compliance)
 	router.HandleFunc("/reports", env.reports)
 	router.HandleFunc("/reports/{key}", env.report)
+	router.HandleFunc("/reports/{key}/compliances", env.compliancesByReport)
 	router.HandleFunc("/categorytags", env.categoryTags)
 	router.HandleFunc("/categorytags/{key}", env.categoryTag)
 	router.HandleFunc("/categorytags/{key}/paragraphs", env.paragraphsByCategoryTag)
@@ -224,6 +240,8 @@ func TestHandlers(t *testing.T) {
 		{"invalid compliances key", 404, "/compliances/42", ""},
 		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
 		{"compliances by invalid paragraph", 404, "/paragraphs/13/compliances", ""},
+		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliances by invalid report", 404, "/reports/1/compliances", ""},
 		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
 		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
 		{"invalid report key", 404, "/reports/42", ""},
