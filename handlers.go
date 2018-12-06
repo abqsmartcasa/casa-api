@@ -34,19 +34,19 @@ func responseJSON(w http.ResponseWriter, payload interface{}, lang interface{}) 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Language", fmt.Sprintf("%s", lang))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	//w.Header().Set("Cache-Control", "max-age=3600")
+	w.Header().Set("Cache-Control", "max-age=3600")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
 
 func (env *Env) paragraphs(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	paragraphs, err := env.db.AllParagraphs(lang)
+	ps, err := env.db.AllParagraphs(lang)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	responseJSON(w, paragraphs, lang)
+	responseJSON(w, ps, lang)
 }
 
 func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
@@ -101,12 +101,12 @@ func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) 
 
 func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	compliances, err := env.db.AllCompliances(lang)
+	cs, err := env.db.AllCompliances(lang)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	responseJSON(w, compliances, lang)
+	responseJSON(w, cs, lang)
 }
 
 func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
@@ -159,12 +159,12 @@ func (env *Env) compliancesByReport(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) reports(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	reports, err := env.db.AllReports(lang)
+	rpts, err := env.db.AllReports(lang)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	responseJSON(w, reports, lang)
+	responseJSON(w, rpts, lang)
 }
 
 func (env *Env) report(w http.ResponseWriter, r *http.Request) {
@@ -185,12 +185,12 @@ func (env *Env) report(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) categoryTags(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	categoryTags, err := env.db.AllCategoryTags(lang)
+	cts, err := env.db.AllCategoryTags(lang)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	responseJSON(w, categoryTags, lang)
+	responseJSON(w, cts, lang)
 }
 
 func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
@@ -227,12 +227,12 @@ func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 
 func (env *Env) specificTags(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	specificTags, err := env.db.AllSpecificTags(lang)
+	sts, err := env.db.AllSpecificTags(lang)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	responseJSON(w, specificTags, lang)
+	responseJSON(w, sts, lang)
 }
 
 func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
