@@ -31,12 +31,11 @@ func TestGetParagraph(t *testing.T) {
 		lang              interface{}
 		paragraphID       int
 		expectedParagraph Paragraph
-		includes          string
 	}{}
 	for _, test := range tests {
 		paragraph := Paragraph{}
 		paragraph.ID = test.paragraphID
-		p, err := TestDB.GetParagraph(test.lang, paragraph, test.includes)
+		p, err := TestDB.GetParagraph(test.lang, paragraph)
 		if err != nil {
 			t.Errorf("")
 		}

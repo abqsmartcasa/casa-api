@@ -8,7 +8,7 @@ import (
 
 type Datastore interface {
 	AllParagraphs(lang interface{}) ([]*Paragraph, error)
-	GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error)
+	GetParagraph(lang interface{}, paragraph Paragraph) (*Paragraph, error)
 	GetParagraphsBySpecificTag(lang interface{}, specificTag SpecificTag) ([]*Paragraph, error)
 	GetParagraphsByCategoryTag(lang interface{}, categoryTag CategoryTag) ([]*Paragraph, error)
 	AllCompliances(lang interface{}) ([]*Compliance, error)

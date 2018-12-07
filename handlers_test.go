@@ -22,7 +22,7 @@ func (mdb *mockDB) AllParagraphs(lang interface{}) ([]*models.Paragraph, error) 
 	return ps, nil
 }
 
-func (mdb *mockDB) GetParagraph(lang interface{}, paragraph models.Paragraph, include string) (*models.Paragraph, error) {
+func (mdb *mockDB) GetParagraph(lang interface{}, paragraph models.Paragraph) (*models.Paragraph, error) {
 	p := &models.Paragraph{}
 	if paragraph.ID == 14 {
 		p.ID = 14

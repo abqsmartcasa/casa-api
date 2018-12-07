@@ -51,11 +51,9 @@ func (env *Env) paragraphs(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
-	v := r.URL.Query()
-	include := v.Get("include")
 	paragraph := models.Paragraph{}
 	paragraph.ID = context.Get(r, "key").(int)
-	p, err := env.db.GetParagraph(lang, paragraph, include)
+	p, err := env.db.GetParagraph(lang, paragraph)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		return

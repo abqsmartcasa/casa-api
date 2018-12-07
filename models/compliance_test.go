@@ -27,7 +27,6 @@ func TestGetCompliance(t *testing.T) {
 		lang               interface{}
 		complianceID       int
 		expectedCompliance Compliance
-		includes           string
 	}{}
 	for _, test := range tests {
 		compliance := Compliance{}

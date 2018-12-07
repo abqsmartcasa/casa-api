@@ -1,18 +1,12 @@
 package models
 
-import (
-	"strings"
-)
-
 // Paragraph model for CASA paragraphs
 type Paragraph struct {
-	UUID            string         `json:"-"`
-	ID              int            `json:"id"`
-	ParagraphNumber int            `json:"paragraph_number"`
-	ParagraphTitle  string         `json:"paragraph_title"`
-	ParagraphText   string         `json:"paragraph_text"`
-	CategoryTag     []*CategoryTag `json:"category_tags,omitempty"`
-	Compliances     []*Compliance  `json:"compliances,omitempty"`
+	UUID            string `json:"-"`
+	ID              int    `json:"id"`
+	ParagraphNumber int    `json:"paragraph_number"`
+	ParagraphTitle  string `json:"paragraph_title"`
+	ParagraphText   string `json:"paragraph_text"`
 }
 
 // AllParagraphs returns a slice with all paragraphs
@@ -52,40 +46,8 @@ func (db *DB) AllParagraphs(lang interface{}) ([]*Paragraph, error) {
 }
 
 // GetParagraph Returns a single paragraph given a Paragraph.ID
-func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph, include string) (*Paragraph, error) {
+func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph) (*Paragraph, error) {
 	p := new(Paragraph)
-	includeParams := strings.Split(include, ",")
-	if contains(includeParams, "compliances") {
-		cs, err := db.GetCompliancesByParagraph(lang, paragraph)
-		for _, c := range cs {
-			c.ParagraphID = 0
-		}
-		if err != nil {
-			return nil, err
-		}
-		p.Compliances = cs
-	}
-	if contains(includeParams, "tags") {
-		cts, err := db.GetCategoryTagsByParagraph(lang, paragraph)
-		if err != nil {
-			return nil, err
-		}
-		for _, ct := range cts {
-			specificTags, err := db.GetSpecificTagsByParagraph(lang, paragraph)
-			sts := make([]*SpecificTag, 0)
-			for _, specificTag := range specificTags {
-				if specificTag.CategoryID == ct.ID {
-					specificTag.CategoryID = 0
-					sts = append(sts, specificTag)
-				}
-			}
-			if err != nil {
-				return nil, err
-			}
-			ct.SpecificTags = sts
-		}
-		p.CategoryTag = cts
-	}
 	query := `SELECT
 			paragraph."paragraph_number" AS "id",
 			paragraph."paragraph_number" AS "paragraph_number",
