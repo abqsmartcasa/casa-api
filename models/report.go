@@ -11,20 +11,6 @@ type Report struct {
 	PeriodEnd   string `json:"period_end"`
 }
 
-var reportQuery = `SELECT
-			report."report_number" as id,
-			'IMR-' || report."report_number" as report_name,
-			trans_report_title."text" as report_title,
-			to_char(report."publish_date", 'YYYY-MM-DD'),
-			to_char(report."period_begin", 'YYYY-MM-DD'),
-			to_char(report."period_end", 'YYYY-MM-DD')
-		FROM
-			report
-			JOIN trans_report_title 
-			ON report.uuid = trans_report_title.report_uuid
-		WHERE 
-			trans_report_title.lang_code = $1`
-
 // AllReports returns a slice with all paragraphs
 func (db *DB) AllReports(lang interface{}) ([]*Report, error) {
 	query := `SELECT
