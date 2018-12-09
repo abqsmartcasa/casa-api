@@ -1,7 +1,5 @@
 package models
 
-import "strings"
-
 // Report model for Independent monitoring reports
 type Report struct {
 	UUID        string `json:"-"`
@@ -29,7 +27,20 @@ var reportQuery = `SELECT
 
 // AllReports returns a slice with all paragraphs
 func (db *DB) AllReports(lang interface{}) ([]*Report, error) {
-	rows, err := db.Query(reportQuery, lang)
+	query := `SELECT
+			report."report_number" as id,
+			'IMR-' || report."report_number" as report_name,
+			trans_report_title."text" as report_title,
+			to_char(report."publish_date", 'YYYY-MM-DD'),
+			to_char(report."period_begin", 'YYYY-MM-DD'),
+			to_char(report."period_end", 'YYYY-MM-DD')
+		FROM
+			report
+			JOIN trans_report_title 
+			ON report.uuid = trans_report_title.report_uuid
+		WHERE 
+			trans_report_title.lang_code = $1`
+	rows, err := db.Query(query, lang)
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +64,20 @@ func (db *DB) AllReports(lang interface{}) ([]*Report, error) {
 // GetReport Returns a single paragraph given a Report.ID (report_number in DB)
 func (db *DB) GetReport(lang interface{}, report Report) (*Report, error) {
 	rpt := new(Report)
-	var rptQueryBuilder strings.Builder
-	rptQueryBuilder.WriteString(reportQuery)
-	rptQueryBuilder.WriteString(" AND report.report_number = $2")
-	query := rptQueryBuilder.String()
+	query := `SELECT
+			report."report_number" as id,
+			'IMR-' || report."report_number" as report_name,
+			trans_report_title."text" as report_title,
+			to_char(report."publish_date", 'YYYY-MM-DD'),
+			to_char(report."period_begin", 'YYYY-MM-DD'),
+			to_char(report."period_end", 'YYYY-MM-DD')
+		FROM
+			report
+			JOIN trans_report_title 
+			ON report.uuid = trans_report_title.report_uuid
+		WHERE 
+			trans_report_title.lang_code = $1
+			AND report.report_number = $2`
 	row := db.QueryRow(query, lang, report.ID)
 	err := row.Scan(&rpt.ID, &rpt.ReportName, &rpt.ReportTitle, &rpt.PublishDate, &rpt.PeriodBegin, &rpt.PeriodEnd)
 	if err != nil {
