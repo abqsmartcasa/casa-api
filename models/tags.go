@@ -130,10 +130,8 @@ func (db *DB) GetCategoryTagsByParagraph(lang interface{}, paragraph Paragraph) 
 			ON "trans_casa_category"."casa_category_id" = "lkp_casa_category"."id"
 			JOIN "lkp_casa_specific"
 			ON "lkp_casa_specific"."category_id" = "lkp_casa_category"."id"
-			JOIN "paragraph_casa_specific"
-			ON "paragraph_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
 			JOIN paragraph
-			ON "paragraph"."uuid" = paragraph_casa_specific.paragraph_uuid
+			ON "paragraph"."casa_specific_id" = "lkp_casa_specific"."id"
 		WHERE
 			"trans_casa_category"."lang_code" = $1
 			AND
@@ -168,10 +166,8 @@ func (db *DB) GetSpecificTagsByParagraph(lang interface{}, paragraph Paragraph) 
 			"trans_casa_specific"
 			JOIN "lkp_casa_specific"
 			ON "trans_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
-			JOIN "paragraph_casa_specific"
-			ON "paragraph_casa_specific"."casa_specific_id" = "lkp_casa_specific"."id"
 			JOIN paragraph
-			ON "paragraph"."uuid" = paragraph_casa_specific.paragraph_uuid
+			ON "paragraph"."casa_specific_id" = "lkp_casa_specific"."id"
 		WHERE
 			"trans_casa_specific"."lang_code" = $1
 			AND

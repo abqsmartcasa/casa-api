@@ -79,10 +79,8 @@ func (db *DB) GetParagraphsBySpecificTag(lang interface{}, specificTag SpecificT
 			"trans_paragraph_text"."text" AS "paragraph_text"
 		FROM
 			paragraph
-			LEFT JOIN "paragraph_casa_specific" 
-			ON "paragraph_casa_specific".paragraph_uuid = paragraph.uuid
 			LEFT JOIN lkp_casa_specific
-			ON lkp_casa_specific.id = paragraph_casa_specific.casa_specific_id
+			ON lkp_casa_specific.id = paragraph.casa_specific_id
 			LEFT JOIN lkp_casa_category
 			ON lkp_casa_category.id = lkp_casa_specific.category_id
 			LEFT JOIN "trans_paragraph_description"
@@ -122,10 +120,8 @@ func (db *DB) GetParagraphsByCategoryTag(lang interface{}, categoryTag CategoryT
 			"trans_paragraph_text"."text" AS "paragraph_text"
 		FROM
 			paragraph
-			LEFT JOIN "paragraph_casa_specific" 
-			ON "paragraph_casa_specific".paragraph_uuid = paragraph.uuid
 			LEFT JOIN lkp_casa_specific
-			ON lkp_casa_specific.id = paragraph_casa_specific.casa_specific_id
+			ON lkp_casa_specific.id = paragraph.casa_specific_id
 			LEFT JOIN lkp_casa_category
 			ON lkp_casa_category.id = lkp_casa_specific.category_id
 			LEFT JOIN "trans_paragraph_description"
