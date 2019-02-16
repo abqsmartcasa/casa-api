@@ -71,28 +71,27 @@ func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
 // GetCompliancesByParagraph Returns a slice of Compliances given a Paragraph.ParagraphNumber
 func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) ([]*Compliance, error) {
 	query := `SELECT DISTINCT
-			paragraph_compliance.id,
 			report.report_number AS report_id,
 			paragraph.paragraph_number AS paragraph_id,
 			p_trans.text AS primary_compliance,
 			s_trans.text AS secondary_compliance,
 			o_trans.text AS operational_compliance
 		FROM
-			paragraph_compliance
-			JOIN report ON report.uuid = paragraph_compliance.report_uuid
+			compliance
+			JOIN report ON report.uuid = compliance.report_uuid
 			JOIN lkp_compliance AS p_compliance
-			ON paragraph_compliance.primary_compliance = p_compliance.id
+			ON compliance.primary_compliance = p_compliance.id
 			JOIN trans_compliance AS p_trans
 			ON p_trans.compliance_id = p_compliance.id
 			JOIN lkp_compliance AS s_compliance
-			ON paragraph_compliance.secondary_compliance = s_compliance.id
+			ON compliance.secondary_compliance = s_compliance.id
 			JOIN trans_compliance AS s_trans
 			ON s_trans.compliance_id = s_compliance.id
 			JOIN lkp_compliance AS o_compliance
-			ON paragraph_compliance.operation_compliance = o_compliance.id
+			ON compliance.operation_compliance = o_compliance.id
 			JOIN trans_compliance AS o_trans
 			ON o_trans.compliance_id = o_compliance.id
-			JOIN paragraph ON paragraph.uuid = paragraph_compliance.paragraph_uuid
+			JOIN paragraph ON paragraph.uuid = compliance.paragraph_uuid
 		WHERE
 			p_trans.lang_code = $1
 			AND s_trans.lang_code = $1
@@ -118,28 +117,27 @@ func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) (
 // GetCompliancesByReport Returns a slice of Compliances given a Report.ID
 func (db *DB) GetCompliancesByReport(lang interface{}, report Report) ([]*Compliance, error) {
 	query := `SELECT DISTINCT
-			paragraph_compliance.id,
 			report.report_number AS report_id,
 			paragraph.paragraph_number AS paragraph_id,
 			p_trans.text AS primary_compliance,
 			s_trans.text AS secondary_compliance,
 			o_trans.text AS operational_compliance
 		FROM
-			paragraph_compliance
-			JOIN report ON report.uuid = paragraph_compliance.report_uuid
+			compliance
+			JOIN report ON report.uuid = compliance.report_uuid
 			JOIN lkp_compliance AS p_compliance
-			ON paragraph_compliance.primary_compliance = p_compliance.id
+			ON compliance.primary_compliance = p_compliance.id
 			JOIN trans_compliance AS p_trans
 			ON p_trans.compliance_id = p_compliance.id
 			JOIN lkp_compliance AS s_compliance
-			ON paragraph_compliance.secondary_compliance = s_compliance.id
+			ON compliance.secondary_compliance = s_compliance.id
 			JOIN trans_compliance AS s_trans
 			ON s_trans.compliance_id = s_compliance.id
 			JOIN lkp_compliance AS o_compliance
-			ON paragraph_compliance.operation_compliance = o_compliance.id
+			ON compliance.operation_compliance = o_compliance.id
 			JOIN trans_compliance AS o_trans
 			ON o_trans.compliance_id = o_compliance.id
-			JOIN paragraph ON paragraph.uuid = paragraph_compliance.paragraph_uuid
+			JOIN paragraph ON paragraph.uuid = compliance.paragraph_uuid
 		WHERE
 			p_trans.lang_code = $1
 			AND s_trans.lang_code = $1
