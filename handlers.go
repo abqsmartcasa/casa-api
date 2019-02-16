@@ -55,10 +55,6 @@ func (env *Env) paragraph(w http.ResponseWriter, r *http.Request) {
 	paragraph.ID = context.Get(r, "key").(int)
 	p, err := env.db.GetParagraph(lang, paragraph)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if p.ID == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -71,10 +67,6 @@ func (env *Env) paragraphsBySpecificTag(w http.ResponseWriter, r *http.Request) 
 	specificTag.ID = context.Get(r, "key").(int)
 	ps, err := env.db.GetParagraphsBySpecificTag(lang, specificTag)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(ps) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -87,10 +79,6 @@ func (env *Env) paragraphsByCategoryTag(w http.ResponseWriter, r *http.Request) 
 	categoryTag.ID = context.Get(r, "key").(int)
 	ps, err := env.db.GetParagraphsByCategoryTag(lang, categoryTag)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(ps) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -107,34 +95,12 @@ func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 	responseJSON(w, cs, lang)
 }
 
-/*
-func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
-	lang := context.Get(r, "lang")
-	compliance := models.Compliance{}
-	compliance.ID = context.Get(r, "key").(int)
-	c, err := env.db.GetCompliance(lang, compliance)
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if c.ID == 0 {
-		http.Error(w, http.StatusText(404), 404)
-		return
-	}
-	responseJSON(w, c, lang)
-}
-*/
-
 func (env *Env) compliancesByParagraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
 	paragraph := models.Paragraph{}
 	paragraph.ID = context.Get(r, "key").(int)
 	cs, err := env.db.GetCompliancesByParagraph(lang, paragraph)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(cs) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -147,10 +113,6 @@ func (env *Env) compliancesByReport(w http.ResponseWriter, r *http.Request) {
 	report.ID = context.Get(r, "key").(int)
 	cs, err := env.db.GetCompliancesByReport(lang, report)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(cs) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -173,10 +135,6 @@ func (env *Env) report(w http.ResponseWriter, r *http.Request) {
 	report.ID = context.Get(r, "key").(int)
 	rpt, err := env.db.GetReport(lang, report)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if rpt.ID == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -199,10 +157,6 @@ func (env *Env) categoryTag(w http.ResponseWriter, r *http.Request) {
 	categoryTag.ID = context.Get(r, "key").(int)
 	ct, err := env.db.GetCategoryTag(lang, categoryTag)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if ct.ID == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -215,10 +169,6 @@ func (env *Env) categoryTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 	paragraph.ID = context.Get(r, "key").(int)
 	cts, err := env.db.GetCategoryTagsByParagraph(lang, paragraph)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(cts) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -241,10 +191,6 @@ func (env *Env) specificTag(w http.ResponseWriter, r *http.Request) {
 	specificTag.ID = context.Get(r, "key").(int)
 	st, err := env.db.GetSpecificTag(lang, specificTag)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if st.ID == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}
@@ -257,10 +203,6 @@ func (env *Env) specificTagsByParagraph(w http.ResponseWriter, r *http.Request) 
 	paragraph.ID = context.Get(r, "key").(int)
 	sts, err := env.db.GetSpecificTagsByParagraph(lang, paragraph)
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	if len(sts) == 0 {
 		http.Error(w, http.StatusText(404), 404)
 		return
 	}

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,6 +11,10 @@ import (
 	"github.com/apdforward/apdf_api/models"
 	"github.com/gorilla/mux"
 )
+
+type Pages struct {
+	Message []int
+}
 
 type mockDB struct{}
 
@@ -29,8 +36,11 @@ func (mdb *mockDB) GetParagraph(lang interface{}, paragraph models.Paragraph) (*
 		p.ParagraphNumber = 14
 		p.ParagraphTitle = "test"
 		p.ParagraphText = "test"
+		return p, nil
 	}
-	return p, nil
+	err := errors.New("No such paragraph")
+	return nil, err
+
 }
 
 func (mdb *mockDB) GetParagraphsByCategoryTag(lang interface{}, categoryTag models.CategoryTag) ([]*models.Paragraph, error) {
@@ -42,8 +52,11 @@ func (mdb *mockDB) GetParagraphsByCategoryTag(lang interface{}, categoryTag mode
 			ParagraphTitle:  "test",
 			ParagraphText:   "test",
 		})
+		return ps, nil
 	}
-	return ps, nil
+	err := errors.New("No such paragraph")
+	return nil, err
+
 }
 
 func (mdb *mockDB) GetParagraphsBySpecificTag(lang interface{}, specificTag models.SpecificTag) ([]*models.Paragraph, error) {
@@ -55,24 +68,39 @@ func (mdb *mockDB) GetParagraphsBySpecificTag(lang interface{}, specificTag mode
 			ParagraphTitle:  "test",
 			ParagraphText:   "test",
 		})
+		return ps, nil
 	}
-	return ps, nil
+	err := errors.New("No such paragraph")
+	return nil, err
 }
 
 func (mdb *mockDB) AllCompliances(lang interface{}) ([]*models.Compliance, error) {
 	cs := make([]*models.Compliance, 0)
+	pages := []int{14, 15}
+	byte1, err := json.Marshal(pages)
+	if err != nil {
+		fmt.Println(err)
+	}
+	raw := json.RawMessage(byte1)
 	cs = append(cs, &models.Compliance{
 		ReportID:            2,
 		ParagraphID:         3,
 		PrimaryCompliance:   "In Compliance",
 		SecondaryCompliance: "Not In Compliance",
 		OperationCompliance: "Not In Compliance",
+		Pages:               raw,
 	})
 	return cs, nil
 }
 
 func (mdb *mockDB) GetCompliancesByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.Compliance, error) {
 	cs := make([]*models.Compliance, 0)
+	pages := []int{14, 15}
+	byte1, err := json.Marshal(pages)
+	if err != nil {
+		fmt.Println(err)
+	}
+	raw := json.RawMessage(byte1)
 	if paragraph.ID == 14 {
 		cs = append(cs, &models.Compliance{
 			ReportID:            2,
@@ -80,13 +108,23 @@ func (mdb *mockDB) GetCompliancesByParagraph(lang interface{}, paragraph models.
 			PrimaryCompliance:   "In Compliance",
 			SecondaryCompliance: "Not In Compliance",
 			OperationCompliance: "Not In Compliance",
+			Pages:               raw,
 		})
+		return cs, nil
 	}
-	return cs, nil
+	err = errors.New("No such compliances")
+	return nil, err
+
 }
 
 func (mdb *mockDB) GetCompliancesByReport(lang interface{}, report models.Report) ([]*models.Compliance, error) {
 	cs := make([]*models.Compliance, 0)
+	pages := []int{14, 15}
+	byte1, err := json.Marshal(pages)
+	if err != nil {
+		fmt.Println(err)
+	}
+	raw := json.RawMessage(byte1)
 	if report.ID == 2 {
 		cs = append(cs, &models.Compliance{
 			ReportID:            2,
@@ -94,9 +132,12 @@ func (mdb *mockDB) GetCompliancesByReport(lang interface{}, report models.Report
 			PrimaryCompliance:   "In Compliance",
 			SecondaryCompliance: "Not In Compliance",
 			OperationCompliance: "Not In Compliance",
+			Pages:               raw,
 		})
+		return cs, nil
 	}
-	return cs, nil
+	err = errors.New("No such compliances")
+	return nil, err
 }
 
 func (mdb *mockDB) AllReports(lang interface{}) ([]*models.Report, error) {
@@ -121,8 +162,10 @@ func (mdb *mockDB) GetReport(lang interface{}, report models.Report) (*models.Re
 		rpt.PublishDate = "2015-11-23"
 		rpt.PeriodBegin = "2015-02-01"
 		rpt.PeriodEnd = "2015-05-31"
+		return rpt, nil
 	}
-	return rpt, nil
+	err := errors.New("No such report")
+	return nil, err
 }
 
 func (mdb *mockDB) AllCategoryTags(lang interface{}) ([]*models.CategoryTag, error) {
@@ -139,8 +182,10 @@ func (mdb *mockDB) GetCategoryTag(lang interface{}, categoryTag models.CategoryT
 	if categoryTag.ID == 1 {
 		ct.ID = 1
 		ct.Value = "I. Use of Force"
+		return ct, nil
 	}
-	return ct, nil
+	err := errors.New("No such category tag")
+	return nil, err
 }
 
 func (mdb *mockDB) GetCategoryTagsByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.CategoryTag, error) {
@@ -150,8 +195,10 @@ func (mdb *mockDB) GetCategoryTagsByParagraph(lang interface{}, paragraph models
 			ID:    1,
 			Value: "I. Use of Force",
 		})
+		return cts, nil
 	}
-	return cts, nil
+	err := errors.New("invalid paragraph")
+	return nil, err
 }
 
 func (mdb *mockDB) AllSpecificTags(lang interface{}) ([]*models.SpecificTag, error) {
@@ -170,8 +217,10 @@ func (mdb *mockDB) GetSpecificTag(lang interface{}, specificTag models.SpecificT
 		st.ID = 1
 		st.Value = "Use of Force Principles"
 		st.CategoryID = 1
+		return st, nil
 	}
-	return st, nil
+	err := errors.New("No such specific tag")
+	return nil, err
 }
 
 func (mdb *mockDB) GetSpecificTagsByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.SpecificTag, error) {
@@ -182,8 +231,10 @@ func (mdb *mockDB) GetSpecificTagsByParagraph(lang interface{}, paragraph models
 			Value:      "Use of Force Principles",
 			CategoryID: 1,
 		})
+		return sts, nil
 	}
-	return sts, nil
+	err := errors.New("invalid paragraph")
+	return nil, err
 }
 func TestHandlers(t *testing.T) {
 	router := mux.NewRouter()
@@ -218,11 +269,11 @@ func TestHandlers(t *testing.T) {
 		{"paragraphs by specific tag", 200, "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
 		{"paragraphs by invalid specific tag", 404, "/specifictags/13/paragraphs", ""},
 		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
-		{"all compliances", 200, "/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"all compliances", 200, "/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"invalid compliances key", 404, "/compliances/42", ""},
-		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"compliances by invalid paragraph", 404, "/paragraphs/13/compliances", ""},
-		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"compliances by invalid report", 404, "/reports/1/compliances", ""},
 		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
 		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},

@@ -65,7 +65,7 @@ func (db *DB) GetParagraph(lang interface{}, paragraph Paragraph) (*Paragraph, e
 	row := db.QueryRow(query, lang, paragraph.ID)
 	err := row.Scan(&p.ID, &p.ParagraphNumber, &p.ParagraphTitle, &p.ParagraphText)
 	if err != nil {
-		return p, nil
+		return nil, err
 	}
 	return p, nil
 }

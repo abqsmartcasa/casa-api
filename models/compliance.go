@@ -1,18 +1,19 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 )
 
 // Compliance model for compliances
 type Compliance struct {
-	UUID                string `json:"-"`
-	ReportID            int    `json:"report_id"`
-	ParagraphID         int    `json:"paragraph_id,omitempty"`
-	PrimaryCompliance   string `json:"primary_compliance"`
-	OperationCompliance string `json:"operational_compliance"`
-	SecondaryCompliance string `json:"secondary_compliance"`
+	ReportID            int             `json:"report_id"`
+	ParagraphID         int             `json:"paragraph_id,omitempty"`
+	PrimaryCompliance   string          `json:"primary_compliance"`
+	OperationCompliance string          `json:"operational_compliance"`
+	SecondaryCompliance string          `json:"secondary_compliance"`
+	Pages               json.RawMessage `json:"pages"`
 }
 
 // AllCompliances returns a slice with all paragraphs
@@ -22,7 +23,8 @@ func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
 				paragraph.paragraph_number AS paragraph_id,
 				p_trans.text AS primary_compliance,
 				s_trans.text AS secondary_compliance,
-				o_trans.text AS operational_compliance
+				o_trans.text AS operational_compliance,
+				array_to_json(array_agg(compliance_page.page_number ORDER BY compliance_page.page_number ASC)) AS pages
 			FROM
 				compliance
 				JOIN report ON report.uuid = compliance.report_uuid
@@ -39,10 +41,12 @@ func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
 				JOIN trans_compliance AS o_trans
 				ON o_trans.compliance_id = o_compliance.id
 				JOIN paragraph ON paragraph.uuid = compliance.paragraph_uuid
+				JOIN compliance_page ON compliance.uuid = compliance_page.compliance_uuid
 			WHERE
 				p_trans.lang_code = $1
 				AND s_trans.lang_code = $1
-				AND o_trans.lang_code = $1`
+				AND o_trans.lang_code = $1
+			GROUP BY 1,2,3,4,5`
 	rows, err := db.Query(query, lang)
 	log.Println(rows)
 	if err != nil {
@@ -54,7 +58,7 @@ func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
 	cs := make([]*Compliance, 0)
 	for rows.Next() {
 		c := new(Compliance)
-		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance)
+		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance, &c.Pages)
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
@@ -70,12 +74,13 @@ func (db *DB) AllCompliances(lang interface{}) ([]*Compliance, error) {
 
 // GetCompliancesByParagraph Returns a slice of Compliances given a Paragraph.ParagraphNumber
 func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) ([]*Compliance, error) {
-	query := `SELECT DISTINCT
+	query := `SELECT
 			report.report_number AS report_id,
 			paragraph.paragraph_number AS paragraph_id,
 			p_trans.text AS primary_compliance,
 			s_trans.text AS secondary_compliance,
-			o_trans.text AS operational_compliance
+			o_trans.text AS operational_compliance,
+			array_to_json(array_agg(compliance_page.page_number ORDER BY compliance_page.page_number ASC)) AS pages
 		FROM
 			compliance
 			JOIN report ON report.uuid = compliance.report_uuid
@@ -92,11 +97,13 @@ func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) (
 			JOIN trans_compliance AS o_trans
 			ON o_trans.compliance_id = o_compliance.id
 			JOIN paragraph ON paragraph.uuid = compliance.paragraph_uuid
+			JOIN compliance_page ON compliance.uuid = compliance_page.compliance_uuid
 		WHERE
 			p_trans.lang_code = $1
 			AND s_trans.lang_code = $1
 			AND o_trans.lang_code = $1
-			AND paragraph.paragraph_number = $2`
+			AND paragraph.paragraph_number = $2
+		GROUP BY 1,2,3,4,5`
 	rows, err := db.Query(query, lang, paragraph.ID)
 	if err != nil {
 		return nil, err
@@ -105,7 +112,7 @@ func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) (
 	defer rows.Close()
 	for rows.Next() {
 		c := new(Compliance)
-		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance)
+		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance, &c.Pages)
 		if err != nil {
 			return nil, err
 		}
@@ -116,12 +123,13 @@ func (db *DB) GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) (
 
 // GetCompliancesByReport Returns a slice of Compliances given a Report.ID
 func (db *DB) GetCompliancesByReport(lang interface{}, report Report) ([]*Compliance, error) {
-	query := `SELECT DISTINCT
+	query := `SELECT
 			report.report_number AS report_id,
 			paragraph.paragraph_number AS paragraph_id,
 			p_trans.text AS primary_compliance,
 			s_trans.text AS secondary_compliance,
-			o_trans.text AS operational_compliance
+			o_trans.text AS operational_compliance,
+			array_to_json(array_agg(compliance_page.page_number ORDER BY compliance_page.page_number ASC)) AS pages
 		FROM
 			compliance
 			JOIN report ON report.uuid = compliance.report_uuid
@@ -138,11 +146,13 @@ func (db *DB) GetCompliancesByReport(lang interface{}, report Report) ([]*Compli
 			JOIN trans_compliance AS o_trans
 			ON o_trans.compliance_id = o_compliance.id
 			JOIN paragraph ON paragraph.uuid = compliance.paragraph_uuid
+			JOIN compliance_page ON compliance.uuid = compliance_page.compliance_uuid
 		WHERE
 			p_trans.lang_code = $1
 			AND s_trans.lang_code = $1
 			AND o_trans.lang_code = $1
-			AND report.report_number = $2`
+			AND report.report_number = $2
+		GROUP BY 1,2,3,4,5`
 	rows, err := db.Query(query, lang, report.ID)
 	if err != nil {
 		return nil, err
@@ -151,7 +161,7 @@ func (db *DB) GetCompliancesByReport(lang interface{}, report Report) ([]*Compli
 	defer rows.Close()
 	for rows.Next() {
 		c := new(Compliance)
-		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance)
+		err := rows.Scan(&c.ReportID, &c.ParagraphID, &c.PrimaryCompliance, &c.SecondaryCompliance, &c.OperationCompliance, &c.Pages)
 		if err != nil {
 			return nil, err
 		}
