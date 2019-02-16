@@ -35,8 +35,8 @@ func main() {
 	paragraphsRelationships := paragraphs.PathPrefix("/{key}").Subrouter()
 	paragraphsRelationships.Use(langCheck)
 	paragraphsRelationships.Use(handleKey)
-	paragraphsRelationships.HandleFunc("/categorytags", env.categoryTagsByParagraph).Methods("GET")
-	paragraphsRelationships.HandleFunc("/specifictags", env.specificTagsByParagraph).Methods("GET")
+	paragraphsRelationships.HandleFunc("/category-tags", env.categoryTagsByParagraph).Methods("GET")
+	paragraphsRelationships.HandleFunc("/specific-tags", env.specificTagsByParagraph).Methods("GET")
 	paragraphsRelationships.HandleFunc("/compliances", env.compliancesByParagraph).Methods("GET")
 
 	compliances := r.PathPrefix("/compliances").Subrouter()
@@ -52,14 +52,14 @@ func main() {
 	reports.HandleFunc("/{key}", env.report).Methods("GET")
 	reports.HandleFunc("/{key}/compliances", env.compliancesByReport).Methods("GET")
 
-	categoryTags := r.PathPrefix("/categorytags").Subrouter()
+	categoryTags := r.PathPrefix("/category-tags").Subrouter()
 	categoryTags.Use(langCheck)
 	categoryTags.Use(handleKey)
 	categoryTags.HandleFunc("", env.categoryTags).Methods("GET")
 	categoryTags.HandleFunc("/{key}", env.categoryTag).Methods("GET")
 	categoryTags.HandleFunc("/{key}/paragraphs", env.paragraphsByCategoryTag).Methods("GET")
 
-	specificTags := r.PathPrefix("/specifictags").Subrouter()
+	specificTags := r.PathPrefix("/specific-tags").Subrouter()
 	specificTags.Use(langCheck)
 	specificTags.Use(handleKey)
 	specificTags.HandleFunc("", env.specificTags).Methods("GET")

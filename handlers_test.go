@@ -242,52 +242,52 @@ func TestHandlers(t *testing.T) {
 	env := Env{db: &mockDB{}}
 	router.HandleFunc("/paragraphs", env.paragraphs)
 	router.HandleFunc("/paragraphs/{key}", env.paragraph)
-	router.HandleFunc("/paragraphs/{key}/categorytags", env.categoryTagsByParagraph)
-	router.HandleFunc("/paragraphs/{key}/specifictags", env.specificTagsByParagraph)
+	router.HandleFunc("/paragraphs/{key}/category-tags", env.categoryTagsByParagraph)
+	router.HandleFunc("/paragraphs/{key}/specific-tags", env.specificTagsByParagraph)
 	router.HandleFunc("/paragraphs/{key}/compliances", env.compliancesByParagraph)
 	router.HandleFunc("/compliances", env.compliances)
 	router.HandleFunc("/reports", env.reports)
 	router.HandleFunc("/reports/{key}", env.report)
 	router.HandleFunc("/reports/{key}/compliances", env.compliancesByReport)
-	router.HandleFunc("/categorytags", env.categoryTags)
-	router.HandleFunc("/categorytags/{key}", env.categoryTag)
-	router.HandleFunc("/categorytags/{key}/paragraphs", env.paragraphsByCategoryTag)
-	router.HandleFunc("/specifictags", env.specificTags)
-	router.HandleFunc("/specifictags/{key}", env.specificTag)
-	router.HandleFunc("/specifictags/{key}/paragraphs", env.paragraphsBySpecificTag)
+	router.HandleFunc("/category-tags", env.categoryTags)
+	router.HandleFunc("/category-tags/{key}", env.categoryTag)
+	router.HandleFunc("/category-tags/{key}/paragraphs", env.paragraphsByCategoryTag)
+	router.HandleFunc("/specific-tags", env.specificTags)
+	router.HandleFunc("/specific-tags/{key}", env.specificTag)
+	router.HandleFunc("/specific-tags/{key}/paragraphs", env.paragraphsBySpecificTag)
 	tests := []struct {
 		description string
 		Code        int
 		URL         string
 		expected    string
 	}{
-		{"all paragraphs", 200, "/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"paragraph by key", 200, "/paragraphs/14", "{\"data\":{\"id\":14,\"paragraph_number\":14,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}}"},
+		{"all paragraphs", 200, "/paragraphs", "{\"data\":[{\"id\":42,\"paragraphNumber\":42,\"paragraphTitle\":\"test\",\"paragraphText\":\"test\"}]}"},
+		{"paragraph by key", 200, "/paragraphs/14", "{\"data\":{\"id\":14,\"paragraphNumber\":14,\"paragraphTitle\":\"test\",\"paragraphText\":\"test\"}}"},
 		{"invalid paragraph key", 404, "/paragraphs/13", ""},
-		{"paragraphs by category tag", 200, "/categorytags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"paragraphs by invalid category tag", 404, "/categorytags/13/paragraphs", ""},
-		{"paragraphs by specific tag", 200, "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
-		{"paragraphs by invalid specific tag", 404, "/specifictags/13/paragraphs", ""},
+		{"paragraphs by category tag", 200, "/category-tags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraphNumber\":42,\"paragraphTitle\":\"test\",\"paragraphText\":\"test\"}]}"},
+		{"paragraphs by invalid category tag", 404, "/category-tags/13/paragraphs", ""},
+		{"paragraphs by specific tag", 200, "/specific-tags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraphNumber\":42,\"paragraphTitle\":\"test\",\"paragraphText\":\"test\"}]}"},
+		{"paragraphs by invalid specific tag", 404, "/specific-tags/13/paragraphs", ""},
 		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
-		{"all compliances", 200, "/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
+		{"all compliances", 200, "/compliances", "{\"data\":[{\"reportId\":2,\"paragraphId\":3,\"primaryCompliance\":\"In Compliance\",\"operationalCompliance\":\"Not In Compliance\",\"secondaryCompliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"invalid compliances key", 404, "/compliances/42", ""},
-		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
+		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"reportId\":2,\"paragraphId\":14,\"primaryCompliance\":\"In Compliance\",\"operationalCompliance\":\"Not In Compliance\",\"secondaryCompliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"compliances by invalid paragraph", 404, "/paragraphs/13/compliances", ""},
-		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
+		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"reportId\":2,\"paragraphId\":14,\"primaryCompliance\":\"In Compliance\",\"operationalCompliance\":\"Not In Compliance\",\"secondaryCompliance\":\"Not In Compliance\",\"pages\":[14,15]}]}"},
 		{"compliances by invalid report", 404, "/reports/1/compliances", ""},
-		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
-		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
+		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"reportName\":\"IMR-1\",\"reportTitle\":\"Monitor's First Report\",\"publishDate\":\"2015-11-23\",\"periodBegin\":\"2015-02-01\",\"periodEnd\":\"2015-05-31\"}]}"},
+		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"reportName\":\"IMR-1\",\"reportTitle\":\"Monitor's First Report\",\"publishDate\":\"2015-11-23\",\"periodBegin\":\"2015-02-01\",\"periodEnd\":\"2015-05-31\"}}"},
 		{"invalid report key", 404, "/reports/42", ""},
-		{"all category tags", 200, "/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
-		{"category tag by key", 200, "/categorytags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
-		{"invalid category tag key", 404, "/categorytags/42", ""},
-		{"category tags by paragraph", 200, "/paragraphs/14/categorytags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
-		{"category tags by invalid paragraph", 404, "/paragraphs/13/categorytags", ""},
-		{"all specific tags", 200, "/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
-		{"specific tag by key", 200, "/specifictags/1", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}}"},
-		{"invalid specific tag key", 404, "/specifictags/42", ""},
-		{"specific tags by paragraph", 200, "/paragraphs/14/specifictags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"category_id\":1}]}"},
-		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
+		{"all category tags", 200, "/category-tags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"category tag by key", 200, "/category-tags/1", "{\"data\":{\"id\":1,\"value\":\"I. Use of Force\"}}"},
+		{"invalid category tag key", 404, "/category-tags/42", ""},
+		{"category tags by paragraph", 200, "/paragraphs/14/category-tags", "{\"data\":[{\"id\":1,\"value\":\"I. Use of Force\"}]}"},
+		{"category tags by invalid paragraph", 404, "/paragraphs/13/category-tags", ""},
+		{"all specific tags", 200, "/specific-tags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"categoryId\":1}]}"},
+		{"specific tag by key", 200, "/specific-tags/1", "{\"data\":{\"id\":1,\"value\":\"Use of Force Principles\",\"categoryId\":1}}"},
+		{"invalid specific tag key", 404, "/specific-tags/42", ""},
+		{"specific tags by paragraph", 200, "/paragraphs/14/specific-tags", "{\"data\":[{\"id\":1,\"value\":\"Use of Force Principles\",\"categoryId\":1}]}"},
+		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specific-tags", ""},
 	}
 	for _, test := range tests {
 		rr := httptest.NewRecorder()

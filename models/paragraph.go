@@ -4,9 +4,9 @@ package models
 type Paragraph struct {
 	UUID            string `json:"-"`
 	ID              int    `json:"id"`
-	ParagraphNumber int    `json:"paragraph_number"`
-	ParagraphTitle  string `json:"paragraph_title"`
-	ParagraphText   string `json:"paragraph_text"`
+	ParagraphNumber int    `json:"paragraphNumber"`
+	ParagraphTitle  string `json:"paragraphTitle"`
+	ParagraphText   string `json:"paragraphText"`
 }
 
 // AllParagraphs returns a slice with all paragraphs

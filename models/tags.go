@@ -4,14 +4,14 @@ package models
 type SpecificTag struct {
 	ID         int    `json:"id"`
 	Value      string `json:"value"`
-	CategoryID int    `json:"category_id,omitempty"`
+	CategoryID int    `json:"categoryId,omitempty"`
 }
 
 // CategoryTag model for category tags
 type CategoryTag struct {
 	ID           int            `json:"id"`
 	Value        string         `json:"value"`
-	SpecificTags []*SpecificTag `json:"specific_tags,omitempty"`
+	SpecificTags []*SpecificTag `json:"specificTags,omitempty"`
 }
 
 // AllCategoryTags returns a slice with all Category Tags

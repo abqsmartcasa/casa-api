@@ -4,11 +4,11 @@ package models
 type Report struct {
 	UUID        string `json:"-"`
 	ID          int    `json:"id"`
-	ReportName  string `json:"report_name"`
-	ReportTitle string `json:"report_title"`
-	PublishDate string `json:"publish_date"`
-	PeriodBegin string `json:"period_begin"`
-	PeriodEnd   string `json:"period_end"`
+	ReportName  string `json:"reportName"`
+	ReportTitle string `json:"reportTitle"`
+	PublishDate string `json:"publishDate"`
+	PeriodBegin string `json:"periodBegin"`
+	PeriodEnd   string `json:"periodEnd"`
 }
 
 // AllReports returns a slice with all reports

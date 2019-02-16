@@ -8,11 +8,11 @@ import (
 
 // Compliance model for compliances
 type Compliance struct {
-	ReportID            int             `json:"report_id"`
-	ParagraphID         int             `json:"paragraph_id,omitempty"`
-	PrimaryCompliance   string          `json:"primary_compliance"`
-	OperationCompliance string          `json:"operational_compliance"`
-	SecondaryCompliance string          `json:"secondary_compliance"`
+	ReportID            int             `json:"reportId"`
+	ParagraphID         int             `json:"paragraphId,omitempty"`
+	PrimaryCompliance   string          `json:"primaryCompliance"`
+	OperationCompliance string          `json:"operationalCompliance"`
+	SecondaryCompliance string          `json:"secondaryCompliance"`
 	Pages               json.RawMessage `json:"pages"`
 }
 
