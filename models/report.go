@@ -11,7 +11,7 @@ type Report struct {
 	PeriodEnd   string `json:"period_end"`
 }
 
-// AllReports returns a slice with all paragraphs
+// AllReports returns a slice with all reports
 func (db *DB) AllReports(lang interface{}) ([]*Report, error) {
 	query := `SELECT
 			report."report_number" as id,
@@ -47,7 +47,7 @@ func (db *DB) AllReports(lang interface{}) ([]*Report, error) {
 	return rpts, nil
 }
 
-// GetReport Returns a single paragraph given a Report.ID (report_number in DB)
+// GetReport Returns a single report given a Report.ID (report_number in DB)
 func (db *DB) GetReport(lang interface{}, report Report) (*Report, error) {
 	rpt := new(Report)
 	query := `SELECT

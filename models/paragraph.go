@@ -155,3 +155,9 @@ func (db *DB) GetParagraphsByCategoryTag(lang interface{}, categoryTag CategoryT
 	}
 	return ps, nil
 }
+
+/*
+func GetParagraphsBySOP(lang interface{}, sop SOP) ([]*Paragraph, error) {
+
+}
+*/
