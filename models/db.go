@@ -12,7 +12,7 @@ type Datastore interface {
 	GetParagraphsBySpecificTag(lang interface{}, specificTag SpecificTag) ([]*Paragraph, error)
 	GetParagraphsByCategoryTag(lang interface{}, categoryTag CategoryTag) ([]*Paragraph, error)
 	AllCompliances(lang interface{}) ([]*Compliance, error)
-	GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
+	//GetCompliance(lang interface{}, compliance Compliance) (*Compliance, error)
 	GetCompliancesByParagraph(lang interface{}, paragraph Paragraph) ([]*Compliance, error)
 	GetCompliancesByReport(lang interface{}, report Report) ([]*Compliance, error)
 	AllReports(lang interface{}) ([]*Report, error)

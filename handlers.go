@@ -107,6 +107,7 @@ func (env *Env) compliances(w http.ResponseWriter, r *http.Request) {
 	responseJSON(w, cs, lang)
 }
 
+/*
 func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")
 	compliance := models.Compliance{}
@@ -122,6 +123,7 @@ func (env *Env) compliance(w http.ResponseWriter, r *http.Request) {
 	}
 	responseJSON(w, c, lang)
 }
+*/
 
 func (env *Env) compliancesByParagraph(w http.ResponseWriter, r *http.Request) {
 	lang := context.Get(r, "lang")

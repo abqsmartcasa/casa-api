@@ -43,7 +43,7 @@ func main() {
 	compliances.Use(langCheck)
 	compliances.Use(handleKey)
 	compliances.HandleFunc("", env.compliances).Methods("GET")
-	compliances.HandleFunc("/{key}", env.compliance).Methods("GET")
+	// compliances.HandleFunc("/{key}", env.compliance).Methods("GET")
 
 	reports := r.PathPrefix("/reports").Subrouter()
 	reports.Use(langCheck)

@@ -21,26 +21,6 @@ func TestAllCompliances(t *testing.T) {
 	}
 }
 
-func TestGetCompliance(t *testing.T) {
-	tests := []struct {
-		description        string
-		lang               interface{}
-		complianceID       int
-		expectedCompliance Compliance
-	}{}
-	for _, test := range tests {
-		compliance := Compliance{}
-		compliance.ID = test.complianceID
-		p, err := TestDB.GetCompliance(test.lang, compliance)
-		if err != nil {
-			t.Errorf("")
-		}
-		if p != &test.expectedCompliance {
-
-		}
-	}
-}
-
 func TestGetCompliancesByParagraph(t *testing.T) {
 	tests := []struct {
 		description  string

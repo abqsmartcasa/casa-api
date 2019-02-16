@@ -62,7 +62,6 @@ func (mdb *mockDB) GetParagraphsBySpecificTag(lang interface{}, specificTag mode
 func (mdb *mockDB) AllCompliances(lang interface{}) ([]*models.Compliance, error) {
 	cs := make([]*models.Compliance, 0)
 	cs = append(cs, &models.Compliance{
-		ID:                  1,
 		ReportID:            2,
 		ParagraphID:         3,
 		PrimaryCompliance:   "In Compliance",
@@ -72,24 +71,10 @@ func (mdb *mockDB) AllCompliances(lang interface{}) ([]*models.Compliance, error
 	return cs, nil
 }
 
-func (mdb *mockDB) GetCompliance(lang interface{}, compliance models.Compliance) (*models.Compliance, error) {
-	c := &models.Compliance{}
-	if compliance.ID == 13 {
-		c.ID = 13
-		c.ReportID = 2
-		c.ParagraphID = 3
-		c.PrimaryCompliance = "In Compliance"
-		c.SecondaryCompliance = "Not In Compliance"
-		c.OperationCompliance = "Not In Compliance"
-	}
-	return c, nil
-}
-
 func (mdb *mockDB) GetCompliancesByParagraph(lang interface{}, paragraph models.Paragraph) ([]*models.Compliance, error) {
 	cs := make([]*models.Compliance, 0)
 	if paragraph.ID == 14 {
 		cs = append(cs, &models.Compliance{
-			ID:                  1,
 			ReportID:            2,
 			ParagraphID:         14,
 			PrimaryCompliance:   "In Compliance",
@@ -104,7 +89,6 @@ func (mdb *mockDB) GetCompliancesByReport(lang interface{}, report models.Report
 	cs := make([]*models.Compliance, 0)
 	if report.ID == 2 {
 		cs = append(cs, &models.Compliance{
-			ID:                  1,
 			ReportID:            2,
 			ParagraphID:         14,
 			PrimaryCompliance:   "In Compliance",
@@ -211,7 +195,6 @@ func TestHandlers(t *testing.T) {
 	router.HandleFunc("/paragraphs/{key}/specifictags", env.specificTagsByParagraph)
 	router.HandleFunc("/paragraphs/{key}/compliances", env.compliancesByParagraph)
 	router.HandleFunc("/compliances", env.compliances)
-	router.HandleFunc("/compliances/{key}", env.compliance)
 	router.HandleFunc("/reports", env.reports)
 	router.HandleFunc("/reports/{key}", env.report)
 	router.HandleFunc("/reports/{key}/compliances", env.compliancesByReport)
@@ -235,12 +218,11 @@ func TestHandlers(t *testing.T) {
 		{"paragraphs by specific tag", 200, "/specifictags/1/paragraphs", "{\"data\":[{\"id\":42,\"paragraph_number\":42,\"paragraph_title\":\"test\",\"paragraph_text\":\"test\"}]}"},
 		{"paragraphs by invalid specific tag", 404, "/specifictags/13/paragraphs", ""},
 		{"specific tags by invalid paragraph", 404, "/paragraphs/13/specifictags", ""},
-		{"all compliances", 200, "/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
-		{"compliance by key", 200, "/compliances/13", "{\"data\":{\"id\":13,\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}}"},
+		{"all compliances", 200, "/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":3,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
 		{"invalid compliances key", 404, "/compliances/42", ""},
-		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliances by paragraph", 200, "/paragraphs/14/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
 		{"compliances by invalid paragraph", 404, "/paragraphs/13/compliances", ""},
-		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"id\":1,\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
+		{"compliances by report", 200, "/reports/2/compliances", "{\"data\":[{\"report_id\":2,\"paragraph_id\":14,\"primary_compliance\":\"In Compliance\",\"operational_compliance\":\"Not In Compliance\",\"secondary_compliance\":\"Not In Compliance\"}]}"},
 		{"compliances by invalid report", 404, "/reports/1/compliances", ""},
 		{"all reports", 200, "/reports", "{\"data\":[{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}]}"},
 		{"report by key", 200, "/reports/1", "{\"data\":{\"id\":1,\"report_name\":\"IMR-1\",\"report_title\":\"Monitor's First Report\",\"publish_date\":\"2015-11-23\",\"period_begin\":\"2015-02-01\",\"period_end\":\"2015-05-31\"}}"},
