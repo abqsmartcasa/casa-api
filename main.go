@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/apdforward/apdf_api/models"
+	"github.com/abqsmartcasa/casa-api/models"
 
 	"github.com/gorilla/mux"
 )
